@@ -8,8 +8,8 @@ import Step4TableWithCOP from './components/steps/Step4TableWithCOP'
 import Step5Inverse from './components/steps/Step5Inverse'
 
 const PROMPTS = [
-  'How many trapezoids cover one hexagon?',
-  'How many trapezoids do 3 hexagons need?',
+  'Cover every hexagon by dragging trapezoids into place.',
+  'Now scale up: cover the larger hexagon set.',
   'Fill in the table.',
   'How many trapezoids do 5 hexagons need?',
   'If you used 14 trapezoids, how many hexagons did you fill?',

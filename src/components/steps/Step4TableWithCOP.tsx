@@ -30,16 +30,19 @@ const Step4TableWithCOP = ({ onReadyChange, onCorrect }: StepComponentProps) => 
 
   const rows: Row[] = [
     {
-      left: { kind: 'shape', shape: 'hex', count: 1 },
-      right: { kind: 'shape', shape: 'trap', count: 2 },
+      hex: { kind: 'shape', shape: 'hex', count: 1 },
+      cop: { kind: 'fraction', top: 2, bottom: 1 },
+      trap: { kind: 'shape', shape: 'trap', count: 2 },
     },
     {
-      left: { kind: 'number', value: 3 },
-      right: { kind: 'number', value: 6 },
+      hex: { kind: 'number', value: 3 },
+      cop: { kind: 'fraction', top: 2, bottom: 1 },
+      trap: { kind: 'number', value: 6 },
     },
     {
-      left: { kind: 'number', value: 5 },
-      right: {
+      hex: { kind: 'number', value: 5 },
+      cop: { kind: 'fraction', top: 2, bottom: 1 },
+      trap: {
         kind: 'input',
         value,
         onChange: (next) => {

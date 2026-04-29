@@ -1,16 +1,16 @@
+import type { SVGProps } from 'react'
 import {
   pointsToString,
   trapezoidPoints,
   type TrapezoidDirection,
 } from '../../lib/geometry'
 
-type TrapezoidProps = {
+type TrapezoidProps = SVGProps<SVGSVGElement> & {
   size?: number
   fill?: string
   stroke?: string
   strokeWidth?: number
   direction?: TrapezoidDirection
-  className?: string
 }
 
 const Trapezoid = ({
@@ -20,6 +20,7 @@ const Trapezoid = ({
   strokeWidth = 1.5,
   direction = 'up',
   className,
+  ...rest
 }: TrapezoidProps) => {
   const h = size * (Math.sqrt(3) / 2)
 
@@ -28,6 +29,7 @@ const Trapezoid = ({
       viewBox={`${-size - 1} ${-h - 1} ${size * 2 + 2} ${h * 2 + 2}`}
       className={className}
       aria-hidden="true"
+      {...rest}
     >
       <polygon
         points={pointsToString(trapezoidPoints(size, direction))}

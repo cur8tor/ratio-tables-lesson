@@ -35,9 +35,9 @@ const NumberInput = ({
     if (status === 'correct') {
       controls.start({
         boxShadow: [
-          '0 0 0 0 rgba(34, 211, 238, 0)',
-          '0 0 0 3px rgba(34, 211, 238, 0.35)',
-          '0 0 0 0 rgba(34, 211, 238, 0)',
+          '0 0 0 0 rgba(22, 163, 74, 0)',
+          '0 0 0 3px rgba(22, 163, 74, 0.35)',
+          '0 0 0 0 rgba(22, 163, 74, 0)',
         ],
         transition: { duration: 0.35, ease: 'easeOut' },
       })
@@ -67,7 +67,7 @@ const NumberInput = ({
       }}
       animate={controls}
       placeholder={placeholder}
-      className={`h-12 w-24 rounded-xl border bg-surface px-3 text-center text-xl text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30 ${borderClass} ${className ?? ''}`}
+      className={`h-12 w-24 rounded-xl border bg-white px-3 text-center text-xl text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30 ${borderClass} ${className ?? ''}`}
     />
   )
 }

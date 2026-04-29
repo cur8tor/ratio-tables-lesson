@@ -9,7 +9,7 @@ const ContinueButton = ({ onClick, disabled }: ContinueButtonProps) => {
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="h-12 min-w-48 rounded-xl bg-accent px-6 text-base font-medium text-slate-900 transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:bg-secondary/40 disabled:text-primary/50"
+      className="h-12 min-w-48 rounded-xl bg-accent px-6 text-base font-medium text-white transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:bg-secondary/40 disabled:text-white/60"
     >
       Continue
     </button>

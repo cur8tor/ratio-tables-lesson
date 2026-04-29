@@ -4,8 +4,21 @@ import NumberInput, { type InputStatus } from '../primitives/NumberInput'
 import Trapezoid from '../primitives/Trapezoid'
 import type { StepComponentProps } from './types'
 
+type TrapPiece = {
+  id: string
+  direction: 'up' | 'down'
+  zoneIndex: number | null
+}
+
 const Step2ConcreteScaled = ({ onReadyChange, onCorrect }: StepComponentProps) => {
-  const [zones, setZones] = useState<number[]>([0, 0, 0])
+  const [hexCount] = useState(6)
+  const [traps, setTraps] = useState<TrapPiece[]>(
+    Array.from({ length: 20 }).map((_, index) => ({
+      id: `step2-trap-${index}`,
+      direction: index % 2 === 0 ? 'up' : 'down',
+      zoneIndex: null,
+    })),
+  )
   const [value, setValue] = useState('')
   const [status, setStatus] = useState<InputStatus>('idle')
   const [solved, setSolved] = useState(false)
@@ -14,11 +27,17 @@ const Step2ConcreteScaled = ({ onReadyChange, onCorrect }: StepComponentProps) =
     onReadyChange(false)
   }, [onReadyChange])
 
-  const totalPlaced = zones.reduce((sum, current) => sum + current, 0)
+  const required = hexCount * 2
+  const placedCount = traps.filter((trap) => trap.zoneIndex !== null).length
+  const directionsByZone = Array.from({ length: hexCount }, (_, zoneIndex) =>
+    traps
+      .filter((trap) => trap.zoneIndex === zoneIndex)
+      .map((_, index) => (index === 0 ? 'up' : 'down')),
+  )
 
   const handleSubmit = () => {
     const parsed = Number(value)
-    if (!solved && parsed === 6 && totalPlaced === 6) {
+    if (!solved && parsed === required && placedCount === required) {
       setStatus('correct')
       onReadyChange(true)
       setSolved(true)
@@ -30,36 +49,45 @@ const Step2ConcreteScaled = ({ onReadyChange, onCorrect }: StepComponentProps) =
 
   return (
     <div className="flex w-full max-w-2xl flex-col items-center gap-6">
-      <div className="flex flex-wrap items-center justify-center gap-4">
-        {zones.map((count, index) => (
+      <div className="flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-secondary/20 bg-surface p-4">
+        {directionsByZone.map((directions, index) => (
           <DropZone
             key={index}
             label={`hexagon ${index + 1} drop zone`}
-            placedDirections={count === 2 ? ['up', 'down'] : count === 1 ? ['up'] : []}
-            onDrop={() =>
-              setZones((current) => {
-                const next = [...current]
-                next[index] = Math.min(2, next[index] + 1)
-                return next
-              })
-            }
+            placedDirections={directions}
+            onDrop={(trapId) => {
+              if (directions.length >= 2) return
+              setTraps((current) =>
+                current.map((trap) =>
+                  trap.id === trapId ? { ...trap, zoneIndex: index } : trap,
+                ),
+              )
+            }}
             size={24}
           />
         ))}
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-2 rounded-xl border border-secondary/20 bg-surface p-3">
-        {Array.from({ length: 6 - totalPlaced }).map((_, index) => (
-          <Trapezoid
-            key={index}
-            size={16}
-            direction={index % 2 === 0 ? 'up' : 'down'}
-            className="h-10 w-10"
-          />
+      <div className="flex max-h-36 w-full flex-wrap items-center justify-center gap-2 overflow-y-auto rounded-xl border border-secondary/20 bg-surface p-3">
+        {traps.filter((trap) => trap.zoneIndex === null).map((trap) => (
+          <div
+            key={trap.id}
+            draggable
+            onDragStart={(event) => event.dataTransfer.setData('text/plain', trap.id)}
+            className="cursor-grab active:cursor-grabbing"
+          >
+            <Trapezoid
+              size={16}
+              direction={trap.direction}
+              className="h-10 w-10"
+              stroke="#1F2937"
+              strokeWidth={1.2}
+            />
+          </div>
         ))}
       </div>
-      <p className="text-sm text-secondary">Fill all three hexagons, then answer.</p>
+      <p className="text-sm text-secondary">Use the trapezoid bank to cover every hexagon.</p>
       <div className="flex flex-col items-center gap-3">
-        <label className="text-sm text-secondary">How many trapezoids do 3 hexagons need?</label>
+        <label className="text-sm text-secondary">How many trapezoids do {hexCount} hexagons need?</label>
         <NumberInput
           value={value}
           onChange={(next) => {

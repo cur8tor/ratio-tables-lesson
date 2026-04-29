@@ -25,10 +25,18 @@ const Step5Inverse = ({ onReadyChange, onCorrect }: StepComponentProps) => {
   }
 
   const rows: Row[] = [
-    { left: { kind: 'number', value: 1 }, right: { kind: 'number', value: 2 } },
-    { left: { kind: 'number', value: 5 }, right: { kind: 'number', value: 10 } },
     {
-      left: {
+      hex: { kind: 'number', value: 1 },
+      cop: { kind: 'fraction', top: 2, bottom: 1 },
+      trap: { kind: 'number', value: 2 },
+    },
+    {
+      hex: { kind: 'number', value: 5 },
+      cop: { kind: 'fraction', top: 2, bottom: 1 },
+      trap: { kind: 'number', value: 10 },
+    },
+    {
+      hex: {
         kind: 'input',
         value,
         onChange: (next) => {
@@ -39,7 +47,8 @@ const Step5Inverse = ({ onReadyChange, onCorrect }: StepComponentProps) => {
         status,
         correct: 7,
       },
-      right: { kind: 'number', value: 14 },
+      cop: { kind: 'fraction', top: 2, bottom: 1 },
+      trap: { kind: 'number', value: 14 },
     },
   ]
 
