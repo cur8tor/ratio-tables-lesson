@@ -7,7 +7,7 @@ import StepTableStarter from './components/steps/StepTableStarter'
 
 function App() {
   const prompts = [
-    'Goal',
+    '',
     '',
     '',
     '',
