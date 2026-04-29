@@ -1,6 +1,6 @@
 # Ratio Tables - A CRA Lesson
 
-**Live lesson:** https://[your-vercel-url].vercel.app
+**Live lesson:** https://ratio-tables-lesson.vercel.app
 
 A short interactive lesson that teaches ratio tables and the constant of proportionality
 to a 6th-7th grade learner, built using the Concrete-Representational-Abstract (CRA)
