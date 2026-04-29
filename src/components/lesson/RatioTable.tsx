@@ -84,16 +84,16 @@ const renderCell = (cell: Cell) => {
 const RatioTable = ({ rows }: RatioTableProps) => {
   return (
     <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-secondary/20 bg-surface">
-      <table className="w-full border-collapse">
+      <table className="w-full border-collapse text-center">
         <thead>
           <tr className="border-b border-secondary/20">
-            <th className="px-4 py-3 text-left text-sm font-medium text-secondary">
+            <th className="border-r border-secondary/20 px-4 py-3 text-sm font-medium text-secondary">
               Hexagons
             </th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-secondary">
+            <th className="border-r border-secondary/20 px-4 py-3 text-sm font-medium text-secondary">
               COP
             </th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-secondary">
+            <th className="px-4 py-3 text-sm font-medium text-secondary">
               Trapezoids
             </th>
           </tr>
@@ -101,8 +101,12 @@ const RatioTable = ({ rows }: RatioTableProps) => {
         <tbody>
           {rows.map((row, rowIndex) => (
             <tr key={rowIndex} className="border-b border-secondary/15 last:border-none">
-              <td className="h-16 px-4 py-2 text-center">{renderCell(row.hex)}</td>
-              <td className="h-16 px-4 py-2 text-center">{renderCell(row.cop)}</td>
+              <td className="h-16 border-r border-secondary/15 px-4 py-2 text-center">
+                {renderCell(row.hex)}
+              </td>
+              <td className="h-16 border-r border-secondary/15 px-4 py-2 text-center">
+                {renderCell(row.cop)}
+              </td>
               <td className="h-16 px-4 py-2 text-center">{renderCell(row.trap)}</td>
             </tr>
           ))}
