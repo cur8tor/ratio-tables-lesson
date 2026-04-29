@@ -21,7 +21,6 @@ const StepScaleBalance = ({
   registerCheck,
 }: StepScaleBalanceProps) => {
   const scaleContainerRef = useRef<HTMLDivElement | null>(null)
-  const balancedRef = useRef(false)
   const hexCountRef = useRef(initialHex)
   const trapCountRef = useRef(initialTrap)
   const [hexCount, setHexCount] = useState(initialHex)
@@ -56,7 +55,6 @@ const StepScaleBalance = ({
 
   const requiredTraps = effectiveHexCount * 2
   const balanced = effectiveTrapCount === requiredTraps
-  balancedRef.current = balanced
   const imbalance = effectiveTrapCount - requiredTraps
   const beamAngle = Math.max(-14, Math.min(14, imbalance * 4))
   const beamLength = Math.max(220, Math.min(560, containerWidth * 0.82))
@@ -72,21 +70,17 @@ const StepScaleBalance = ({
 
   const updateHexCount = (updater: (current: number) => number) => {
     if (fixedHex !== undefined) return
-    setHexCount((current) => {
-      const next = Math.max(0, updater(current))
-      hexCountRef.current = next
-      return next
-    })
+    const next = Math.max(0, updater(hexCountRef.current))
+    hexCountRef.current = next
+    setHexCount(next)
     onCorrectChange?.(false)
   }
 
   const updateTrapCount = (updater: (current: number) => number) => {
     if (fixedTrap !== undefined) return
-    setTrapCount((current) => {
-      const next = Math.max(0, updater(current))
-      trapCountRef.current = next
-      return next
-    })
+    const next = Math.max(0, updater(trapCountRef.current))
+    trapCountRef.current = next
+    setTrapCount(next)
     onCorrectChange?.(false)
   }
 
