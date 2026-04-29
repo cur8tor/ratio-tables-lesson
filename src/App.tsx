@@ -22,7 +22,8 @@ function App() {
   const [canPressCheck, setCanPressCheck] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
   const [hasChecked, setHasChecked] = useState(false)
-  const [checkFn, setCheckFn] = useState<() => void>(() => () => {})
+  const [checkFn, setCheckFn] = useState<(() => void) | null>(null)
+  const [isCheckRegistered, setIsCheckRegistered] = useState(false)
   const [cfuStatuses, setCfuStatuses] = useState<Array<boolean | null>>([null, null, null])
 
   const isComplete = currentStep >= prompts.length
@@ -33,7 +34,8 @@ function App() {
       setCanPressCheck(false)
       setIsCorrect(false)
       setHasChecked(false)
-      setCheckFn(() => () => {})
+      setCheckFn(null)
+      setIsCheckRegistered(false)
     }
   }
 
@@ -52,7 +54,10 @@ function App() {
       onReadyChange: setCanPressCheck,
       onCorrect: advanceStep,
       onCorrectChange: handleCorrectChange,
-      registerCheck: (fn: () => void) => setCheckFn(() => fn),
+      registerCheck: (fn: () => void) => {
+        setCheckFn(() => fn)
+        setIsCheckRegistered(true)
+      },
     }
 
     if (currentStep === 0) return <StepIntroGoal {...common} />
@@ -102,7 +107,8 @@ function App() {
             setCanPressCheck(false)
             setIsCorrect(false)
             setHasChecked(false)
-            setCheckFn(() => () => {})
+            setCheckFn(null)
+            setIsCheckRegistered(false)
             setCfuStatuses([null, null, null])
           }}
         />
@@ -115,7 +121,7 @@ function App() {
       step={Math.min(prompts.length, currentStep + 1 + (isCorrect ? 1 : 0))}
       total={prompts.length}
       prompt={prompts[currentStep]}
-      canContinue={canPressCheck}
+      canContinue={currentStep === 0 ? true : canPressCheck && isCheckRegistered}
       isCorrect={isCorrect}
       canGoBack={currentStep > 0}
       canGoForward={currentStep < prompts.length - 1}
@@ -124,14 +130,16 @@ function App() {
         setCanPressCheck(false)
         setIsCorrect(false)
         setHasChecked(false)
-        setCheckFn(() => () => {})
+        setCheckFn(null)
+        setIsCheckRegistered(false)
       }}
       onForward={() => {
         setCurrentStep((step) => Math.min(prompts.length - 1, step + 1))
         setCanPressCheck(false)
         setIsCorrect(false)
         setHasChecked(false)
-        setCheckFn(() => () => {})
+        setCheckFn(null)
+        setIsCheckRegistered(false)
       }}
       cfuStatuses={cfuStatuses}
       buttonLabel={currentStep === 0 ? 'Start' : isCorrect ? 'Continue' : hasChecked ? 'Try again' : 'Check'}
@@ -141,7 +149,7 @@ function App() {
           advanceStep()
           return
         }
-        if (!canPressCheck) return
+        if (!canPressCheck || !isCheckRegistered || !checkFn) return
         if (isCorrect) {
           advanceStep()
           return
