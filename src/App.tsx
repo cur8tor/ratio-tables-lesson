@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import LessonShell from './components/lesson/LessonShell'
 import CompletionScreen from './components/steps/CompletionScreen'
 import StepIntroGoal from './components/steps/StepIntroGoal'
@@ -39,8 +39,12 @@ function App() {
     }
   }
 
-  const renderStep = () => {
-    const handleCorrectChange = (ok: boolean) => {
+  const handleReadyChange = useCallback((ready: boolean) => {
+    setCanPressCheck(ready)
+  }, [])
+
+  const handleCorrectChange = useCallback(
+    (ok: boolean) => {
       setIsCorrect(ok)
       if (currentStep >= 7 && currentStep <= 9) {
         const cfuIndex = currentStep - 7
@@ -48,16 +52,21 @@ function App() {
           current.map((status, index) => (index === cfuIndex ? ok : status)),
         )
       }
-    }
+    },
+    [currentStep],
+  )
 
+  const handleRegisterCheck = useCallback((fn: () => void) => {
+    setCheckFn(() => fn)
+    setIsCheckRegistered(true)
+  }, [])
+
+  const renderStep = () => {
     const common = {
-      onReadyChange: setCanPressCheck,
+      onReadyChange: handleReadyChange,
       onCorrect: advanceStep,
       onCorrectChange: handleCorrectChange,
-      registerCheck: (fn: () => void) => {
-        setCheckFn(() => fn)
-        setIsCheckRegistered(true)
-      },
+      registerCheck: handleRegisterCheck,
     }
 
     if (currentStep === 0) return <StepIntroGoal {...common} />
