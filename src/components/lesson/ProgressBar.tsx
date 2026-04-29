@@ -19,7 +19,11 @@ const ProgressBar = ({
   canGoForward,
   cfuStatuses,
 }: ProgressBarProps) => {
-  const percent = Math.min(100, Math.max(0, (step / total) * 100))
+  const cfuCount = cfuStatuses.length
+  const lessonCountBeforeCfu = Math.max(1, total - cfuCount)
+  const currentIndex = Math.max(0, step - 1)
+  const mainProgress = Math.min(lessonCountBeforeCfu, currentIndex)
+  const percent = Math.min(100, Math.max(0, (mainProgress / lessonCountBeforeCfu) * 100))
 
   return (
     <div className="fixed left-0 right-0 top-0 z-20 border-b border-secondary/15 bg-white/95 backdrop-blur">
@@ -42,7 +46,7 @@ const ProgressBar = ({
         >
           →
         </button>
-        <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary/15">
+        <div className="h-3 flex-1 overflow-hidden rounded-full bg-secondary/15">
           <div
             className="h-full rounded-full bg-accent transition-all duration-300 ease-out"
             style={{ width: `${percent}%` }}
