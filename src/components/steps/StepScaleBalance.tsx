@@ -93,7 +93,9 @@ const StepScaleBalance = ({
     registerCheck?.(() => {
       const liveHexCount = fixedHex ?? Math.max(0, hexCountRef.current)
       const liveTrapCount = fixedTrap ?? Math.max(0, trapCountRef.current)
-      onCorrectChange?.(liveTrapCount === liveHexCount * 2)
+      const ok = liveTrapCount === liveHexCount * 2
+      onCorrectChange?.(ok)
+      return ok
     })
   }, [fixedHex, fixedTrap, onCorrectChange, registerCheck])
 
@@ -161,7 +163,7 @@ const StepScaleBalance = ({
           >
             <div className="mx-auto h-16 w-px bg-primary/60" />
             <div className="flex flex-col items-center gap-0.5">
-              {Array.from({ length: Math.min(effectiveTrapCount, 8) }).map((_, index) => (
+              {Array.from({ length: effectiveTrapCount }).map((_, index) => (
                 <button
                   key={index}
                   type="button"

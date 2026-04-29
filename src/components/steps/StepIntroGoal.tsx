@@ -10,6 +10,7 @@ const StepIntroGoal = ({ onReadyChange, onCorrectChange, registerCheck }: StepCo
   useEffect(() => {
     registerCheck?.(() => {
       onCorrectChange?.(true)
+      return true
     })
   }, [onCorrectChange, registerCheck])
 

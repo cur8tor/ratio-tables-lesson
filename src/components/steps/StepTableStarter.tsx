@@ -26,8 +26,8 @@ const StepTableStarter = ({
   const [status, setStatus] = useState<InputStatus>('idle')
   const valueRef = useRef('')
   const answerRef = useRef(answer)
-  const [scaleHex, setScaleHex] = useState(given.hex ?? 1)
-  const [scaleTrap, setScaleTrap] = useState(given.trap ?? 0)
+  const [scaleHex, setScaleHex] = useState(given.hex ?? Math.floor((given.trap ?? 2) / 2))
+  const [scaleTrap, setScaleTrap] = useState(given.trap ?? (given.hex ?? 1) * 2)
   const fixedHex = given.hex !== undefined
   const fixedTrap = given.trap !== undefined
 
@@ -42,10 +42,19 @@ const StepTableStarter = ({
   }, [answer])
 
   useEffect(() => {
+    if (!showScale) return
+    const nextHex = given.hex ?? Math.floor((given.trap ?? 2) / 2)
+    const nextTrap = given.trap ?? nextHex * 2
+    setScaleHex(nextHex)
+    setScaleTrap(nextTrap)
+  }, [given.hex, given.trap, showScale])
+
+  useEffect(() => {
     registerCheck?.(() => {
       const ok = Number(valueRef.current) === answerRef.current
       setStatus(ok ? 'correct' : 'wrong')
       onCorrectChange?.(ok)
+      return ok
     })
   }, [onCorrectChange, registerCheck])
 

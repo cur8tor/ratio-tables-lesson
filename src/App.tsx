@@ -20,10 +20,9 @@ function App() {
   ]
   const [currentStep, setCurrentStep] = useState(0)
   const [canPressCheck, setCanPressCheck] = useState(false)
-  const [isCorrect, setIsCorrect] = useState(false)
   const [stepPassed, setStepPassed] = useState(false)
   const [hasChecked, setHasChecked] = useState(false)
-  const [checkFn, setCheckFn] = useState<(() => void) | null>(null)
+  const [checkFn, setCheckFn] = useState<(() => boolean) | null>(null)
   const [isCheckRegistered, setIsCheckRegistered] = useState(false)
   const [cfuStatuses, setCfuStatuses] = useState<Array<boolean | null>>([null, null, null])
 
@@ -33,7 +32,6 @@ function App() {
     if (!isComplete) {
       setCurrentStep((step) => step + 1)
       setCanPressCheck(false)
-      setIsCorrect(false)
       setStepPassed(false)
       setHasChecked(false)
       setCheckFn(null)
@@ -47,7 +45,6 @@ function App() {
 
   const handleCorrectChange = useCallback(
     (ok: boolean) => {
-      setIsCorrect(ok)
       if (ok) setStepPassed(true)
       if (currentStep >= 7 && currentStep <= 9) {
         const cfuIndex = currentStep - 7
@@ -59,7 +56,7 @@ function App() {
     [currentStep],
   )
 
-  const handleRegisterCheck = useCallback((fn: () => void) => {
+  const handleRegisterCheck = useCallback((fn: () => boolean) => {
     setCheckFn(() => fn)
     setIsCheckRegistered(true)
   }, [])
@@ -117,7 +114,6 @@ function App() {
           onRestart={() => {
             setCurrentStep(0)
             setCanPressCheck(false)
-            setIsCorrect(false)
             setStepPassed(false)
             setHasChecked(false)
             setCheckFn(null)
@@ -131,7 +127,7 @@ function App() {
 
   return (
     <LessonShell
-      step={Math.min(prompts.length, currentStep + 1 + (isCorrect ? 1 : 0))}
+      step={currentStep + 1}
       total={prompts.length}
       prompt={prompts[currentStep]}
       canContinue={currentStep === 0 ? true : canPressCheck && isCheckRegistered}
@@ -141,7 +137,6 @@ function App() {
       onBack={() => {
         setCurrentStep((step) => Math.max(0, step - 1))
         setCanPressCheck(false)
-        setIsCorrect(false)
         setStepPassed(false)
         setHasChecked(false)
         setCheckFn(null)
@@ -150,7 +145,6 @@ function App() {
       onForward={() => {
         setCurrentStep((step) => Math.min(prompts.length - 1, step + 1))
         setCanPressCheck(false)
-        setIsCorrect(false)
         setStepPassed(false)
         setHasChecked(false)
         setCheckFn(null)
@@ -169,8 +163,11 @@ function App() {
           advanceStep()
           return
         }
+        const ok = checkFn()
         setHasChecked(true)
-        checkFn()
+        if (ok) {
+          advanceStep()
+        }
       }}
     >
       {renderStep()}
