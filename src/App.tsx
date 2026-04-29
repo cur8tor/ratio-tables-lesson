@@ -21,6 +21,7 @@ function App() {
   const [currentStep, setCurrentStep] = useState(0)
   const [canPressCheck, setCanPressCheck] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
+  const [hasChecked, setHasChecked] = useState(false)
   const [checkFn, setCheckFn] = useState<() => void>(() => () => {})
   const [cfuStatuses, setCfuStatuses] = useState<Array<boolean | null>>([null, null, null])
 
@@ -31,6 +32,7 @@ function App() {
       setCurrentStep((step) => step + 1)
       setCanPressCheck(false)
       setIsCorrect(false)
+      setHasChecked(false)
       setCheckFn(() => () => {})
     }
   }
@@ -54,16 +56,12 @@ function App() {
     }
 
     if (currentStep === 0) return <StepIntroGoal {...common} />
-    if (currentStep === 1) return <StepScaleBalance {...common} targetHex={1} />
-    if (currentStep === 2) return <StepScaleBalance {...common} targetHex={2} />
+    if (currentStep === 1)
+      return <StepScaleBalance {...common} fixedHex={1} initialTrap={0} />
+    if (currentStep === 2)
+      return <StepScaleBalance {...common} fixedTrap={6} initialHex={2} />
     if (currentStep === 3)
-      return (
-        <StepScaleBalance
-          {...common}
-          targetHex={2}
-          requireDifferentFrom={{ hex: 2, trap: 4 }}
-        />
-      )
+      return <StepScaleBalance {...common} fixedTrap={10} initialHex={3} />
     if (currentStep === 4)
       return <StepTableStarter {...common} given={{ hex: 1 }} answer={2} showScale />
     if (currentStep === 5)
@@ -103,6 +101,7 @@ function App() {
             setCurrentStep(0)
             setCanPressCheck(false)
             setIsCorrect(false)
+            setHasChecked(false)
             setCheckFn(() => () => {})
             setCfuStatuses([null, null, null])
           }}
@@ -119,20 +118,35 @@ function App() {
       canContinue={canPressCheck}
       isCorrect={isCorrect}
       canGoBack={currentStep > 0}
+      canGoForward={currentStep < prompts.length - 1}
       onBack={() => {
         setCurrentStep((step) => Math.max(0, step - 1))
         setCanPressCheck(false)
         setIsCorrect(false)
+        setHasChecked(false)
+        setCheckFn(() => () => {})
+      }}
+      onForward={() => {
+        setCurrentStep((step) => Math.min(prompts.length - 1, step + 1))
+        setCanPressCheck(false)
+        setIsCorrect(false)
+        setHasChecked(false)
         setCheckFn(() => () => {})
       }}
       cfuStatuses={cfuStatuses}
-      buttonLabel={currentStep === 0 ? 'Start' : isCorrect ? 'Continue' : 'Check'}
+      buttonLabel={currentStep === 0 ? 'Start' : isCorrect ? 'Continue' : hasChecked ? 'Try again' : 'Check'}
+      buttonWarning={currentStep > 0 && hasChecked && !isCorrect}
       onContinue={() => {
+        if (currentStep === 0) {
+          advanceStep()
+          return
+        }
         if (!canPressCheck) return
         if (isCorrect) {
           advanceStep()
           return
         }
+        setHasChecked(true)
         checkFn()
       }}
     >

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Hexagon from '../primitives/Hexagon'
 import NumberInput, { type InputStatus } from '../primitives/NumberInput'
 import Trapezoid from '../primitives/Trapezoid'
@@ -24,21 +24,30 @@ const StepTableStarter = ({
 }: StepTableStarterProps) => {
   const [value, setValue] = useState('')
   const [status, setStatus] = useState<InputStatus>('idle')
+  const valueRef = useRef('')
+  const answerRef = useRef(answer)
   const [scaleHex, setScaleHex] = useState(given.hex ?? 1)
   const [scaleTrap, setScaleTrap] = useState(given.trap ?? 0)
+  const fixedHex = given.hex !== undefined
+  const fixedTrap = given.trap !== undefined
 
   useEffect(() => {
     onReadyChange(value.trim().length > 0)
     onCorrectChange?.(false)
+    valueRef.current = value
   }, [onCorrectChange, onReadyChange, value])
 
   useEffect(() => {
+    answerRef.current = answer
+  }, [answer])
+
+  useEffect(() => {
     registerCheck?.(() => {
-      const ok = Number(value) === answer
+      const ok = Number(valueRef.current) === answerRef.current
       setStatus(ok ? 'correct' : 'wrong')
       onCorrectChange?.(ok)
     })
-  }, [answer, onCorrectChange, registerCheck, value])
+  }, [onCorrectChange, registerCheck])
 
   return (
     <div className="flex w-full max-w-4xl flex-col items-center gap-6">
@@ -47,7 +56,18 @@ const StepTableStarter = ({
           <div className="relative h-64">
             <div className="absolute left-1/2 top-10 h-2 w-[66%] -translate-x-1/2 rounded-full bg-primary/70" />
             <div className="absolute left-1/2 top-10 h-16 w-1 -translate-x-1/2 bg-primary/70" />
-            <div className="absolute left-[22%] top-12 -translate-x-1/2">
+            <div
+              className="absolute left-[22%] top-12 -translate-x-1/2"
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={(event) => {
+                event.preventDefault()
+                if (event.dataTransfer.getData('shape') === 'hex') {
+                  if (fixedHex) return
+                  setScaleHex((count) => count + 1)
+                  onCorrectChange?.(false)
+                }
+              }}
+            >
               <div className="mx-auto h-16 w-px bg-primary/50" />
               <div className="flex flex-col items-center gap-1">
                 {Array.from({ length: Math.max(0, scaleHex) }).map((_, index) => (
@@ -55,6 +75,7 @@ const StepTableStarter = ({
                     key={index}
                     type="button"
                     onClick={() => {
+                      if (fixedHex) return
                       setScaleHex((count) => Math.max(0, count - 1))
                       onCorrectChange?.(false)
                     }}
@@ -71,6 +92,7 @@ const StepTableStarter = ({
               onDrop={(event) => {
                 event.preventDefault()
                 if (event.dataTransfer.getData('shape') === 'trap') {
+                  if (fixedTrap) return
                   setScaleTrap((count) => count + 1)
                   onCorrectChange?.(false)
                 }
@@ -83,6 +105,7 @@ const StepTableStarter = ({
                     key={index}
                     type="button"
                     onClick={() => {
+                      if (fixedTrap) return
                       setScaleTrap((count) => Math.max(0, count - 1))
                       onCorrectChange?.(false)
                     }}
@@ -176,11 +199,14 @@ const StepTableStarter = ({
               type="button"
               draggable
               onClick={() => {
+                if (fixedHex) return
                 setScaleHex((count) => count + 1)
                 onCorrectChange?.(false)
               }}
               onDragStart={(event) => event.dataTransfer.setData('shape', 'hex')}
-              className="flex h-12 w-16 items-center justify-center rounded-lg border border-secondary/25 bg-surface"
+              className={`flex h-12 w-16 items-center justify-center rounded-lg border bg-surface ${
+                fixedHex ? 'cursor-not-allowed border-secondary/10 opacity-40' : 'border-secondary/25'
+              }`}
             >
               <Hexagon size={10} fill="#FFD63B" className="h-7 w-7" />
             </button>
@@ -188,11 +214,14 @@ const StepTableStarter = ({
               type="button"
               draggable
               onClick={() => {
+                if (fixedTrap) return
                 setScaleTrap((count) => count + 1)
                 onCorrectChange?.(false)
               }}
               onDragStart={(event) => event.dataTransfer.setData('shape', 'trap')}
-              className="flex h-12 w-16 items-center justify-center rounded-lg border border-secondary/25 bg-surface"
+              className={`flex h-12 w-16 items-center justify-center rounded-lg border bg-surface ${
+                fixedTrap ? 'cursor-not-allowed border-secondary/10 opacity-40' : 'border-secondary/25'
+              }`}
             >
               <Trapezoid size={10} fit="tight" direction="up" className="h-5 w-8" />
             </button>

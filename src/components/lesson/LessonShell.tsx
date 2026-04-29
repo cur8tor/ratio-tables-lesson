@@ -12,9 +12,12 @@ type LessonShellProps = {
   isCorrect: boolean
   onContinue: () => void
   onBack: () => void
+  onForward: () => void
   canGoBack: boolean
+  canGoForward: boolean
   cfuStatuses: Array<boolean | null>
   buttonLabel?: string
+  buttonWarning?: boolean
   children: ReactNode
 }
 
@@ -26,9 +29,12 @@ const LessonShell = ({
   isCorrect,
   onContinue,
   onBack,
+  onForward,
   canGoBack,
+  canGoForward,
   cfuStatuses,
   buttonLabel,
+  buttonWarning = false,
   children,
 }: LessonShellProps) => {
   return (
@@ -37,7 +43,9 @@ const LessonShell = ({
         step={step}
         total={total}
         onBack={onBack}
+        onForward={onForward}
         canGoBack={canGoBack}
+        canGoForward={canGoForward}
         cfuStatuses={cfuStatuses}
       />
       <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center justify-center px-4 pb-36 pt-20">
@@ -66,8 +74,9 @@ const LessonShell = ({
           <ContinueButton
             onClick={onContinue}
             disabled={!canContinue}
-            label={buttonLabel}
             success={isCorrect}
+            warning={buttonWarning}
+            label={buttonLabel}
           />
         </div>
       </div>
