@@ -13,6 +13,7 @@ type LessonShellProps = {
   onContinue: () => void
   onBack: () => void
   onForward: () => void
+  onClose: () => void
   canGoBack: boolean
   canGoForward: boolean
   cfuStatuses: Array<boolean | null>
@@ -31,6 +32,7 @@ const LessonShell = ({
   onContinue,
   onBack,
   onForward,
+  onClose,
   canGoBack,
   canGoForward,
   cfuStatuses,
@@ -46,6 +48,7 @@ const LessonShell = ({
         total={total}
         onBack={onBack}
         onForward={onForward}
+        onClose={onClose}
         canGoBack={canGoBack}
         canGoForward={canGoForward}
         cfuStatuses={cfuStatuses}

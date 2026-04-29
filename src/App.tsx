@@ -6,18 +6,9 @@ import StepScaleBalance from './components/steps/StepScaleBalance'
 import StepTableStarter from './components/steps/StepTableStarter'
 
 function App() {
-  const prompts = [
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-  ]
+  const prompts = ['', '', '', '', '', '', '', '', '', '']
+  const [screen, setScreen] = useState<'home' | 'lesson'>('home')
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null)
   const [currentStep, setCurrentStep] = useState(0)
   const [canPressCheck, setCanPressCheck] = useState(false)
   const [stepPassed, setStepPassed] = useState(false)
@@ -27,6 +18,16 @@ function App() {
   const [cfuStatuses, setCfuStatuses] = useState<Array<boolean | null>>([null, null, null])
 
   const isComplete = currentStep >= prompts.length
+
+  const resetLessonState = useCallback(() => {
+    setCurrentStep(0)
+    setCanPressCheck(false)
+    setStepPassed(false)
+    setHasChecked(false)
+    setCheckFn(null)
+    setIsCheckRegistered(false)
+    setCfuStatuses([null, null, null])
+  }, [])
 
   const advanceStep = () => {
     if (!isComplete) {
@@ -70,14 +71,10 @@ function App() {
     }
 
     if (currentStep === 0) return <StepIntroGoal {...common} />
-    if (currentStep === 1)
-      return <StepScaleBalance {...common} fixedHex={1} initialTrap={0} />
-    if (currentStep === 2)
-      return <StepScaleBalance {...common} fixedTrap={6} initialHex={0} />
-    if (currentStep === 3)
-      return <StepScaleBalance {...common} fixedTrap={10} initialHex={0} />
-    if (currentStep === 4)
-      return <StepTableStarter {...common} given={{ hex: 1 }} answer={2} showScale />
+    if (currentStep === 1) return <StepScaleBalance {...common} fixedHex={1} initialTrap={0} />
+    if (currentStep === 2) return <StepScaleBalance {...common} fixedTrap={6} initialHex={0} />
+    if (currentStep === 3) return <StepScaleBalance {...common} fixedTrap={10} initialHex={0} />
+    if (currentStep === 4) return <StepTableStarter {...common} given={{ hex: 1 }} answer={2} showScale />
     if (currentStep === 5)
       return (
         <StepTableStarter
@@ -107,18 +104,65 @@ function App() {
     return null
   }
 
+  if (screen === 'home') {
+    return (
+      <div className="min-h-screen bg-[#F3F4F6] px-4 pb-32 pt-8 text-primary">
+        <div className="mx-auto w-full max-w-2xl space-y-6">
+          <div className="rounded-3xl border border-[#BFE8CB] bg-[#E8F7EC] p-8 text-center">
+            <h1 className="text-4xl font-semibold text-primary">Ratio Path</h1>
+          </div>
+
+          <div className="space-y-4">
+            <button
+              type="button"
+              onClick={() => setSelectedLevel(1)}
+              className="w-full rounded-2xl border-2 border-[#6C8CFF] bg-white px-6 py-4 text-left shadow-[0_4px_0_0_#6C8CFF]"
+            >
+              <p className="text-sm font-semibold tracking-wide text-[#4F63C7]">LEVEL 1</p>
+              <p className="text-2xl font-semibold text-primary">Setting Up Ratios</p>
+            </button>
+
+            <div className="w-full rounded-2xl border border-secondary/20 bg-white px-6 py-4 opacity-60">
+              <p className="text-sm font-semibold tracking-wide text-secondary">LEVEL 2</p>
+              <p className="text-2xl font-semibold text-primary">Scaling Up</p>
+            </div>
+
+            <div className="w-full rounded-2xl border border-secondary/20 bg-white px-6 py-4 opacity-60">
+              <p className="text-sm font-semibold tracking-wide text-secondary">LEVEL 3</p>
+              <p className="text-2xl font-semibold text-primary">Ratio Tables</p>
+            </div>
+          </div>
+        </div>
+
+        {selectedLevel === 1 ? (
+          <div className="fixed bottom-0 left-0 right-0 border-t border-secondary/20 bg-white/95 p-4 backdrop-blur">
+            <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-3">
+              <h2 className="text-2xl font-semibold text-primary">Setting Up Ratios</h2>
+              <button
+                type="button"
+                onClick={() => {
+                  resetLessonState()
+                  setScreen('lesson')
+                }}
+                className="h-14 min-w-[280px] rounded-full bg-[#2F3136] px-8 text-2xl font-medium text-white transition hover:brightness-110 sm:min-w-[360px]"
+              >
+                Start lesson
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    )
+  }
+
   if (isComplete) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-bg px-4">
         <CompletionScreen
           onRestart={() => {
-            setCurrentStep(0)
-            setCanPressCheck(false)
-            setStepPassed(false)
-            setHasChecked(false)
-            setCheckFn(null)
-            setIsCheckRegistered(false)
-            setCfuStatuses([null, null, null])
+            resetLessonState()
+            setScreen('home')
+            setSelectedLevel(1)
           }}
         />
       </div>
@@ -149,6 +193,10 @@ function App() {
         setHasChecked(false)
         setCheckFn(null)
         setIsCheckRegistered(false)
+      }}
+      onClose={() => {
+        setScreen('home')
+        setSelectedLevel(null)
       }}
       cfuStatuses={cfuStatuses}
       buttonLabel={currentStep === 0 ? '▶' : stepPassed ? '→' : hasChecked ? '↻' : '✓'}

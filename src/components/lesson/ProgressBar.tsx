@@ -3,6 +3,7 @@ type ProgressBarProps = {
   total: number
   onBack: () => void
   onForward: () => void
+  onClose: () => void
   canGoBack: boolean
   canGoForward: boolean
   cfuStatuses: Array<boolean | null>
@@ -13,6 +14,7 @@ const ProgressBar = ({
   total,
   onBack,
   onForward,
+  onClose,
   canGoBack,
   canGoForward,
   cfuStatuses,
@@ -60,9 +62,14 @@ const ProgressBar = ({
             />
           ))}
         </div>
-        <div className="min-w-14 text-right text-xl font-semibold text-primary">
-          {step} <span className="text-yellow-500">⚡</span>
-        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close lesson and return home"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-secondary/25 text-base font-medium text-primary transition hover:border-secondary/45"
+        >
+          ✕
+        </button>
       </div>
     </div>
   )
