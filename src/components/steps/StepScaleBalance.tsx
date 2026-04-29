@@ -22,6 +22,8 @@ const StepScaleBalance = ({
 }: StepScaleBalanceProps) => {
   const scaleContainerRef = useRef<HTMLDivElement | null>(null)
   const balancedRef = useRef(false)
+  const hexCountRef = useRef(initialHex)
+  const trapCountRef = useRef(initialTrap)
   const [hexCount, setHexCount] = useState(initialHex)
   const [trapCount, setTrapCount] = useState(initialTrap)
   const [containerWidth, setContainerWidth] = useState(900)
@@ -32,6 +34,8 @@ const StepScaleBalance = ({
     if (configRef.current !== nextConfig) {
       setHexCount(initialHex)
       setTrapCount(initialTrap)
+      hexCountRef.current = initialHex
+      trapCountRef.current = initialTrap
       configRef.current = nextConfig
     }
   }, [fixedHex, fixedTrap, initialHex, initialTrap])
@@ -66,6 +70,26 @@ const StepScaleBalance = ({
   const leftTipTop = beamY - halfProjectionY
   const rightTipTop = beamY + halfProjectionY
 
+  const updateHexCount = (updater: (current: number) => number) => {
+    if (fixedHex !== undefined) return
+    setHexCount((current) => {
+      const next = Math.max(0, updater(current))
+      hexCountRef.current = next
+      return next
+    })
+    onCorrectChange?.(false)
+  }
+
+  const updateTrapCount = (updater: (current: number) => number) => {
+    if (fixedTrap !== undefined) return
+    setTrapCount((current) => {
+      const next = Math.max(0, updater(current))
+      trapCountRef.current = next
+      return next
+    })
+    onCorrectChange?.(false)
+  }
+
   useEffect(() => {
     onReadyChange(true)
     onCorrectChange?.(false)
@@ -73,9 +97,11 @@ const StepScaleBalance = ({
 
   useEffect(() => {
     registerCheck?.(() => {
-      onCorrectChange?.(balancedRef.current)
+      const liveHexCount = fixedHex ?? Math.max(0, hexCountRef.current)
+      const liveTrapCount = fixedTrap ?? Math.max(0, trapCountRef.current)
+      onCorrectChange?.(liveTrapCount === liveHexCount * 2)
     })
-  }, [onCorrectChange, registerCheck])
+  }, [fixedHex, fixedTrap, onCorrectChange, registerCheck])
 
   return (
     <div className="flex w-full max-w-4xl flex-col items-center gap-6 pb-24">
@@ -105,9 +131,7 @@ const StepScaleBalance = ({
             onDrop={(event) => {
               event.preventDefault()
               if (event.dataTransfer.getData('shape') === 'hex') {
-                if (fixedHex !== undefined) return
-                setHexCount((count) => count + 1)
-                onCorrectChange?.(false)
+                updateHexCount((count) => count + 1)
               }
             }}
           >
@@ -118,9 +142,7 @@ const StepScaleBalance = ({
                   key={index}
                   type="button"
                   onClick={() => {
-                    if (fixedHex !== undefined) return
-                    setHexCount((count) => Math.max(0, count - 1))
-                    onCorrectChange?.(false)
+                    updateHexCount((count) => count - 1)
                   }}
                   className="rounded border border-transparent hover:border-secondary/30"
                 >
@@ -139,9 +161,7 @@ const StepScaleBalance = ({
             onDrop={(event) => {
               event.preventDefault()
               if (event.dataTransfer.getData('shape') === 'trap') {
-                if (fixedTrap !== undefined) return
-                setTrapCount((count) => count + 1)
-                onCorrectChange?.(false)
+                updateTrapCount((count) => count + 1)
               }
             }}
           >
@@ -152,9 +172,7 @@ const StepScaleBalance = ({
                   key={index}
                   type="button"
                   onClick={() => {
-                    if (fixedTrap !== undefined) return
-                    setTrapCount((count) => Math.max(0, count - 1))
-                    onCorrectChange?.(false)
+                    updateTrapCount((count) => count - 1)
                   }}
                   className={`flex h-4 items-center justify-center rounded border px-1 ${
                     balanced
@@ -181,9 +199,7 @@ const StepScaleBalance = ({
             type="button"
             draggable
             onClick={() => {
-              if (fixedHex !== undefined) return
-              setHexCount((count) => count + 1)
-              onCorrectChange?.(false)
+              updateHexCount((count) => count + 1)
             }}
             onDragStart={(event) => event.dataTransfer.setData('shape', 'hex')}
             className={`flex h-12 w-16 items-center justify-center rounded-lg border bg-surface ${
@@ -198,9 +214,7 @@ const StepScaleBalance = ({
             type="button"
             draggable
             onClick={() => {
-              if (fixedTrap !== undefined) return
-              setTrapCount((count) => count + 1)
-              onCorrectChange?.(false)
+              updateTrapCount((count) => count + 1)
             }}
             onDragStart={(event) => event.dataTransfer.setData('shape', 'trap')}
             className={`flex h-12 w-16 items-center justify-center rounded-lg border bg-surface ${
