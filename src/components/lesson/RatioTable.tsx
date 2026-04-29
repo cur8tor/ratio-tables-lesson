@@ -35,8 +35,9 @@ const renderShapeCell = (shape: 'hex' | 'trap', count: number) => {
           <Trapezoid
             key={index}
             size={10}
+            fit="tight"
             direction={index % 2 === 0 ? 'up' : 'down'}
-            className="h-5 w-5"
+            className="h-3 w-5"
           />
         ),
       )}
