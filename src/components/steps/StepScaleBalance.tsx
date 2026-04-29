@@ -20,8 +20,16 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
   const solved = balanced && rowCorrect
   const imbalance = trapCount - requiredTraps
   const beamAngle = Math.max(-14, Math.min(14, imbalance * 4))
-  const leftYOffset = -beamAngle * 1.5
-  const rightYOffset = beamAngle * 1.5
+  const beamLength = 560
+  const beamY = 52
+  const angleRadians = (beamAngle * Math.PI) / 180
+  const halfProjectionX = (beamLength / 2) * Math.cos(angleRadians)
+  const halfProjectionY = (beamLength / 2) * Math.sin(angleRadians)
+
+  const leftTipLeft = `calc(50% - ${halfProjectionX}px)`
+  const rightTipLeft = `calc(50% + ${halfProjectionX}px)`
+  const leftTipTop = beamY - halfProjectionY
+  const rightTipTop = beamY + halfProjectionY
 
   useEffect(() => {
     onReadyChange(solved)
@@ -43,7 +51,10 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
           <div className="absolute left-1/2 top-10 z-10 h-24 w-1 -translate-x-1/2 bg-primary/70" />
           <div className="absolute left-1/2 top-[106px] h-16 w-10 -translate-x-1/2 rounded-t-full bg-primary/10" />
 
-          <div className="absolute left-1/2 top-10 h-2 w-3/5 -translate-x-1/2">
+          <div
+            className="absolute left-1/2 h-2 -translate-x-1/2"
+            style={{ width: `${beamLength}px`, top: `${beamY}px` }}
+          >
             <motion.div
               className="h-full w-full rounded-full bg-primary/70"
               animate={{ rotate: beamAngle }}
@@ -53,11 +64,12 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
           </div>
 
           <motion.div
-            className="absolute left-[20%] top-12 -translate-x-1/2"
-            animate={{ y: leftYOffset }}
-            transition={{ type: 'spring', stiffness: 160, damping: 18 }}
+            className="absolute -translate-x-1/2"
+            style={{ left: leftTipLeft, top: `${leftTipTop}px` }}
+            animate={{ left: leftTipLeft, top: `${leftTipTop}px` }}
+            transition={{ type: 'spring', stiffness: 190, damping: 22 }}
           >
-            <div className="mx-auto h-14 w-px bg-primary/60" />
+            <div className="mx-auto h-16 w-px bg-primary/60" />
             <div className="flex flex-col items-center gap-1">
               {Array.from({ length: hexCount }).map((_, index) => (
                 <Hexagon key={index} size={10} fill="#FFD63B" className="h-8 w-8" />
@@ -66,9 +78,10 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
           </motion.div>
 
           <motion.div
-            className="absolute left-[80%] top-12 -translate-x-1/2"
-            animate={{ y: rightYOffset }}
-            transition={{ type: 'spring', stiffness: 160, damping: 18 }}
+            className="absolute -translate-x-1/2"
+            style={{ left: rightTipLeft, top: `${rightTipTop}px` }}
+            animate={{ left: rightTipLeft, top: `${rightTipTop}px` }}
+            transition={{ type: 'spring', stiffness: 190, damping: 22 }}
             onDragOver={(event) => event.preventDefault()}
             onDrop={(event) => {
               event.preventDefault()
@@ -77,7 +90,7 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
               }
             }}
           >
-            <div className="mx-auto h-14 w-px bg-primary/60" />
+            <div className="mx-auto h-16 w-px bg-primary/60" />
             <div className="flex flex-col items-center gap-0.5">
               {Array.from({ length: Math.min(trapCount, 8) }).map((_, index) => (
                 <button
