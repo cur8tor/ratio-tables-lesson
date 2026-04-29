@@ -151,7 +151,10 @@ function App() {
         setIsCheckRegistered(false)
       }}
       cfuStatuses={cfuStatuses}
-      buttonLabel={currentStep === 0 ? 'Start' : stepPassed ? 'Continue' : hasChecked ? 'Try again' : 'Check'}
+      buttonLabel={currentStep === 0 ? '▶' : stepPassed ? '→' : hasChecked ? '↻' : '✓'}
+      buttonAriaLabel={
+        currentStep === 0 ? 'Start' : stepPassed ? 'Continue' : hasChecked ? 'Try again' : 'Check'
+      }
       buttonWarning={currentStep > 0 && hasChecked && !stepPassed}
       onContinue={() => {
         if (currentStep === 0) {

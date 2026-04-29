@@ -17,6 +17,7 @@ type LessonShellProps = {
   canGoForward: boolean
   cfuStatuses: Array<boolean | null>
   buttonLabel?: string
+  buttonAriaLabel?: string
   buttonWarning?: boolean
   children: ReactNode
 }
@@ -34,6 +35,7 @@ const LessonShell = ({
   canGoForward,
   cfuStatuses,
   buttonLabel,
+  buttonAriaLabel,
   buttonWarning = false,
   children,
 }: LessonShellProps) => {
@@ -77,6 +79,7 @@ const LessonShell = ({
             success={isCorrect}
             warning={buttonWarning}
             label={buttonLabel}
+            ariaLabel={buttonAriaLabel}
           />
         </div>
       </div>
