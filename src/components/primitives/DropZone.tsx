@@ -4,7 +4,7 @@ import Trapezoid from './Trapezoid'
 type DropZoneProps = {
   size?: number
   placedDirections: Array<'up' | 'down'>
-  onDrop: (trapId: string) => void
+  onDrop: () => void
   label: string
 }
 
@@ -14,9 +14,9 @@ const DropZone = ({ size = 28, placedDirections, onDrop, label }: DropZoneProps)
       onDragOver={(event) => event.preventDefault()}
       onDrop={(event) => {
         event.preventDefault()
-        const trapId = event.dataTransfer.getData('text/plain')
-        if (trapId) {
-          onDrop(trapId)
+        const marker = event.dataTransfer.getData('text/plain')
+        if (marker) {
+          onDrop()
         }
       }}
       className="relative h-24 w-24 rounded-xl border border-secondary/20 bg-surface transition hover:border-accent/60"

@@ -8,8 +8,8 @@ import Step4TableWithCOP from './components/steps/Step4TableWithCOP'
 import Step5Inverse from './components/steps/Step5Inverse'
 
 const PROMPTS = [
-  'Cover every hexagon by dragging trapezoids into place.',
-  'Now scale up: cover the larger hexagon set.',
+  'A teacher needs a quick rule for pattern block kits. What is the number of trapezoids per hexagon?',
+  'Use that rule to find the total trapezoids for this larger set.',
   'Fill in the table.',
   'How many trapezoids do 5 hexagons need?',
   'If you used 14 trapezoids, how many hexagons did you fill?',

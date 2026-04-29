@@ -24,7 +24,7 @@ const LessonShell = ({
   return (
     <div className="relative min-h-screen bg-bg text-primary">
       <ProgressBar step={step} total={total} />
-      <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-4 pb-32 pt-12">
+      <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center justify-center px-4 pb-32 pt-16">
         <div className="w-full space-y-8">
           <QuestionPrompt text={prompt} />
           <AnimatePresence mode="wait">

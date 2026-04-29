@@ -4,20 +4,35 @@ import NumberInput, { type InputStatus } from '../primitives/NumberInput'
 import Trapezoid from '../primitives/Trapezoid'
 import type { StepComponentProps } from './types'
 
-type TrapPiece = {
-  id: string
-  direction: 'up' | 'down'
-  zoneIndex: number | null
-}
+const HEX_LAYOUT = [
+  { left: '6%', top: '6%', rotate: '-7deg' },
+  { left: '30%', top: '10%', rotate: '5deg' },
+  { left: '56%', top: '6%', rotate: '-5deg' },
+  { left: '12%', top: '44%', rotate: '6deg' },
+  { left: '38%', top: '50%', rotate: '-8deg' },
+  { left: '62%', top: '44%', rotate: '4deg' },
+] as const
+
+const BANK_LAYOUT = [
+  { left: '6%', top: '8%', rotate: '-7deg', direction: 'up' as const },
+  { left: '24%', top: '8%', rotate: '6deg', direction: 'down' as const },
+  { left: '42%', top: '8%', rotate: '-5deg', direction: 'up' as const },
+  { left: '60%', top: '8%', rotate: '8deg', direction: 'down' as const },
+  { left: '78%', top: '8%', rotate: '-4deg', direction: 'up' as const },
+  { left: '10%', top: '34%', rotate: '7deg', direction: 'down' as const },
+  { left: '28%', top: '34%', rotate: '-6deg', direction: 'up' as const },
+  { left: '46%', top: '34%', rotate: '5deg', direction: 'down' as const },
+  { left: '64%', top: '34%', rotate: '-8deg', direction: 'up' as const },
+  { left: '82%', top: '34%', rotate: '4deg', direction: 'down' as const },
+  { left: '12%', top: '60%', rotate: '-6deg', direction: 'up' as const },
+  { left: '30%', top: '60%', rotate: '8deg', direction: 'down' as const },
+  { left: '48%', top: '60%', rotate: '-5deg', direction: 'up' as const },
+  { left: '66%', top: '60%', rotate: '6deg', direction: 'down' as const },
+] as const
 
 const Step2ConcreteScaled = ({ onReadyChange, onCorrect }: StepComponentProps) => {
-  const [hexCount] = useState(6)
-  const [traps, setTraps] = useState<TrapPiece[]>(
-    Array.from({ length: 20 }).map((_, index) => ({
-      id: `step2-trap-${index}`,
-      direction: index % 2 === 0 ? 'up' : 'down',
-      zoneIndex: null,
-    })),
+  const [zoneFills, setZoneFills] = useState<number[]>(
+    Array.from({ length: HEX_LAYOUT.length }, () => 0),
   )
   const [value, setValue] = useState('')
   const [status, setStatus] = useState<InputStatus>('idle')
@@ -27,12 +42,10 @@ const Step2ConcreteScaled = ({ onReadyChange, onCorrect }: StepComponentProps) =
     onReadyChange(false)
   }, [onReadyChange])
 
-  const required = hexCount * 2
-  const placedCount = traps.filter((trap) => trap.zoneIndex !== null).length
-  const directionsByZone = Array.from({ length: hexCount }, (_, zoneIndex) =>
-    traps
-      .filter((trap) => trap.zoneIndex === zoneIndex)
-      .map((_, index) => (index === 0 ? 'up' : 'down')),
+  const required = HEX_LAYOUT.length * 2
+  const placedCount = zoneFills.reduce((total, fills) => total + fills, 0)
+  const directionsByZone = zoneFills.map((fills) =>
+    Array.from({ length: fills }, (_, index) => (index === 0 ? 'up' : 'down')),
   )
 
   const handleSubmit = () => {
@@ -49,45 +62,50 @@ const Step2ConcreteScaled = ({ onReadyChange, onCorrect }: StepComponentProps) =
 
   return (
     <div className="flex w-full max-w-2xl flex-col items-center gap-6">
-      <div className="flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-secondary/20 bg-surface p-4">
-        {directionsByZone.map((directions, index) => (
-          <DropZone
-            key={index}
-            label={`hexagon ${index + 1} drop zone`}
-            placedDirections={directions}
-            onDrop={(trapId) => {
-              if (directions.length >= 2) return
-              setTraps((current) =>
-                current.map((trap) =>
-                  trap.id === trapId ? { ...trap, zoneIndex: index } : trap,
-                ),
-              )
-            }}
-            size={24}
-          />
-        ))}
+      <div className="grid w-full gap-4 md:grid-cols-2">
+        <div className="relative h-72 rounded-2xl border border-secondary/20 bg-surface p-4">
+          {HEX_LAYOUT.map((piece, index) => (
+            <div
+              key={index}
+              className="absolute"
+              style={{ left: piece.left, top: piece.top, transform: `rotate(${piece.rotate})` }}
+            >
+              <DropZone
+                label={`hexagon ${index + 1} drop zone`}
+                placedDirections={directionsByZone[index]}
+                onDrop={() =>
+                  setZoneFills((current) =>
+                    current.map((fills, i) => (i === index ? Math.min(2, fills + 1) : fills)),
+                  )
+                }
+                size={22}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="relative h-72 rounded-2xl border border-secondary/20 bg-surface p-4">
+          {BANK_LAYOUT.map((piece, index) => (
+            <div
+              key={index}
+              draggable
+              onDragStart={(event) => event.dataTransfer.setData('text/plain', 'trap')}
+              className="absolute cursor-grab active:cursor-grabbing"
+              style={{ left: piece.left, top: piece.top, transform: `rotate(${piece.rotate})` }}
+            >
+              <Trapezoid
+                size={16}
+                direction={piece.direction}
+                className="h-10 w-10"
+                stroke="#1F2937"
+                strokeWidth={1.2}
+              />
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="flex max-h-36 w-full flex-wrap items-center justify-center gap-2 overflow-y-auto rounded-xl border border-secondary/20 bg-surface p-3">
-        {traps.filter((trap) => trap.zoneIndex === null).map((trap) => (
-          <div
-            key={trap.id}
-            draggable
-            onDragStart={(event) => event.dataTransfer.setData('text/plain', trap.id)}
-            className="cursor-grab active:cursor-grabbing"
-          >
-            <Trapezoid
-              size={16}
-              direction={trap.direction}
-              className="h-10 w-10"
-              stroke="#1F2937"
-              strokeWidth={1.2}
-            />
-          </div>
-        ))}
-      </div>
-      <p className="text-sm text-secondary">Use the trapezoid bank to cover every hexagon.</p>
+      <p className="text-sm text-secondary">Keep dragging from the bank until all six hexagons are covered.</p>
       <div className="flex flex-col items-center gap-3">
-        <label className="text-sm text-secondary">How many trapezoids do {hexCount} hexagons need?</label>
+        <label className="text-sm text-secondary">How many trapezoids do 6 hexagons need?</label>
         <NumberInput
           value={value}
           onChange={(next) => {
@@ -96,9 +114,10 @@ const Step2ConcreteScaled = ({ onReadyChange, onCorrect }: StepComponentProps) =
           }}
           onSubmit={handleSubmit}
           status={status}
-          ariaLabel="How many trapezoids for 3 hexagons"
+          ariaLabel="How many trapezoids for 6 hexagons"
         />
       </div>
+      <p className="text-xs text-secondary">Placed trapezoids: {placedCount}</p>
     </div>
   )
 }
