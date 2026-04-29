@@ -9,9 +9,11 @@ type StepScaleBalanceProps = StepComponentProps & {
 }
 
 const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
+  const scaleContainerRef = useRef<HTMLDivElement | null>(null)
   const [hexCount, setHexCount] = useState(1)
   const [trapCount, setTrapCount] = useState(0)
   const [phaseTwoBaseline, setPhaseTwoBaseline] = useState({ hex: 2, trap: 4 })
+  const [containerWidth, setContainerWidth] = useState(900)
   const previousPhase = useRef(phase)
 
   const minimumHexForPhase = phase === 0 ? 1 : 2
@@ -21,7 +23,7 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
   const balanced = trapCount === requiredTraps
   const imbalance = trapCount - requiredTraps
   const beamAngle = Math.max(-14, Math.min(14, imbalance * 4))
-  const beamLength = 560
+  const beamLength = Math.max(220, Math.min(560, containerWidth * 0.82))
   const beamY = 52
   const angleRadians = (beamAngle * Math.PI) / 180
   const halfProjectionX = (beamLength / 2) * Math.cos(angleRadians)
@@ -31,6 +33,17 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
   const rightTipLeft = `calc(50% + ${halfProjectionX}px)`
   const leftTipTop = beamY - halfProjectionY
   const rightTipTop = beamY + halfProjectionY
+
+  useEffect(() => {
+    const measure = () => {
+      const nextWidth = scaleContainerRef.current?.clientWidth
+      if (nextWidth) setContainerWidth(nextWidth)
+    }
+
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
 
   useEffect(() => {
     if (phase !== previousPhase.current) {
@@ -63,7 +76,7 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
   return (
     <div className="flex w-full max-w-4xl flex-col items-center gap-6 pb-24">
       <div className="w-full p-2">
-        <div className="relative mx-auto h-64 w-full max-w-3xl">
+        <div ref={scaleContainerRef} className="relative mx-auto h-64 w-full max-w-3xl overflow-hidden">
           <div className="absolute left-1/2 top-10 z-10 h-24 w-1 -translate-x-1/2 bg-primary/70" />
           <div className="absolute left-1/2 top-[106px] h-16 w-10 -translate-x-1/2 rounded-t-full bg-primary/10" />
 
@@ -94,7 +107,7 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
                   onClick={() => setHexCount((count) => Math.max(0, count - 1))}
                   className="rounded border border-transparent hover:border-secondary/30"
                 >
-                  <Hexagon size={10} fill="#FFD63B" className="h-8 w-8" />
+                  <Hexagon size={10} fill="#FFD63B" className="h-7 w-7 sm:h-8 sm:w-8" />
                 </button>
               ))}
             </div>
@@ -130,7 +143,7 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
                     size={8}
                     fit="tight"
                     direction={index % 2 === 0 ? 'up' : 'down'}
-                    className="h-4 w-8"
+                    className="h-3.5 w-7 sm:h-4 sm:w-8"
                   />
                 </button>
               ))}
@@ -143,7 +156,7 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
         </div>
       </div>
 
-      <div className="fixed bottom-24 left-1/2 z-10 w-full max-w-sm -translate-x-1/2 rounded-2xl border border-secondary/20 bg-white/95 p-3 shadow-sm backdrop-blur">
+      <div className="fixed bottom-24 left-1/2 z-10 w-[92%] max-w-sm -translate-x-1/2 rounded-2xl border border-secondary/20 bg-white/95 p-3 shadow-sm backdrop-blur">
         <div className="flex items-center justify-center gap-3">
           <button
             type="button"
