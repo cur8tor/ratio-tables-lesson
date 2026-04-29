@@ -29,7 +29,7 @@ const StepTableStarter = ({
   const answerRef = useRef(answer)
   const scaleContainerRef = useRef<HTMLDivElement | null>(null)
   const [containerWidth, setContainerWidth] = useState(900)
-  const [scaleHex, setScaleHex] = useState(given.hex ?? Math.floor((given.trap ?? 2) / 2))
+  const [scaleHex, setScaleHex] = useState(given.hex ?? (given.trap !== undefined ? 0 : 1))
   const [scaleTrap, setScaleTrap] = useState(given.trap ?? (given.hex ?? 1) * 2)
   const fixedHex = given.hex !== undefined
   const fixedTrap = given.trap !== undefined
@@ -46,7 +46,7 @@ const StepTableStarter = ({
 
   useEffect(() => {
     if (!showScale) return
-    const nextHex = given.hex ?? Math.floor((given.trap ?? 2) / 2)
+    const nextHex = given.hex ?? (given.trap !== undefined ? 0 : 1)
     const nextTrap = given.trap ?? nextHex * 2
     setScaleHex(nextHex)
     setScaleTrap(nextTrap)

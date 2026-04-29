@@ -73,9 +73,9 @@ function App() {
     if (currentStep === 1)
       return <StepScaleBalance {...common} fixedHex={1} initialTrap={0} />
     if (currentStep === 2)
-      return <StepScaleBalance {...common} fixedTrap={6} initialHex={2} />
+      return <StepScaleBalance {...common} fixedTrap={6} initialHex={0} />
     if (currentStep === 3)
-      return <StepScaleBalance {...common} fixedTrap={10} initialHex={3} />
+      return <StepScaleBalance {...common} fixedTrap={10} initialHex={0} />
     if (currentStep === 4)
       return <StepTableStarter {...common} given={{ hex: 1 }} answer={2} showScale />
     if (currentStep === 5)
