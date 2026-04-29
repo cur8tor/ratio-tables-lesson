@@ -28,6 +28,7 @@ const DropZone = ({ size = 28, placedDirections, onDrop, label }: DropZoneProps)
           key={`${direction}-${index}`}
           size={size}
           direction={direction}
+          fit="hex"
           stroke="#1F2937"
           strokeWidth={1.2}
           className="pointer-events-none absolute inset-0 h-full w-full"
