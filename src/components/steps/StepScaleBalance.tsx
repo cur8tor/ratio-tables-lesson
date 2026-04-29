@@ -20,6 +20,8 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
   const solved = balanced && rowCorrect
   const imbalance = trapCount - requiredTraps
   const beamAngle = Math.max(-14, Math.min(14, imbalance * 4))
+  const leftYOffset = -beamAngle * 1.5
+  const rightYOffset = beamAngle * 1.5
 
   useEffect(() => {
     onReadyChange(solved)
@@ -51,23 +53,26 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
           </div>
 
           <motion.div
-            className="absolute left-[10%] top-6 h-36 w-36 rounded-3xl border-2 border-secondary/30 bg-white p-4"
-            animate={{ y: -beamAngle * 1.2 }}
+            className="absolute left-[22%] top-12 -translate-x-1/2"
+            animate={{ y: leftYOffset }}
             transition={{ type: 'spring', stiffness: 160, damping: 18 }}
           >
-            <div className="mb-1 text-center text-xs text-secondary">Hex bucket (fixed)</div>
-            <div className="grid grid-cols-2 gap-2">
-              {Array.from({ length: hexCount }).map((_, index) => (
-                <Hexagon key={index} size={12} fill="#FFD63B" className="h-9 w-9" />
-              ))}
+            <div className="mx-auto h-14 w-px bg-primary/60" />
+            <div className="w-36 rounded-2xl border-2 border-secondary/30 bg-white p-3">
+              <div className="mb-1 text-center text-xs text-secondary">Hex hanger</div>
+              <div className="flex flex-col items-center gap-1">
+                {Array.from({ length: hexCount }).map((_, index) => (
+                  <Hexagon key={index} size={10} fill="#FFD63B" className="h-8 w-8" />
+                ))}
+              </div>
             </div>
           </motion.div>
 
           <motion.div
-            className={`absolute right-[10%] top-6 h-36 w-36 rounded-3xl border-2 bg-white p-4 ${
+            className={`absolute left-[78%] top-12 -translate-x-1/2 ${
               balanced ? 'border-accent/60' : 'border-secondary/30'
             }`}
-            animate={{ y: beamAngle * 1.2 }}
+            animate={{ y: rightYOffset }}
             transition={{ type: 'spring', stiffness: 160, damping: 18 }}
             onDragOver={(event) => event.preventDefault()}
             onDrop={(event) => {
@@ -77,24 +82,31 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
               }
             }}
           >
-            <div className="mb-1 text-center text-xs text-secondary">Trap bucket (drop/remove)</div>
-            <div className="grid grid-cols-3 gap-1">
-              {Array.from({ length: Math.min(trapCount, 9) }).map((_, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => setTrapCount((count) => Math.max(0, count - 1))}
-                  className="flex h-6 items-center justify-center rounded border border-transparent hover:border-secondary/30"
-                >
-                  <Trapezoid
-                    size={8}
-                    fit="tight"
-                    direction={index % 2 === 0 ? 'up' : 'down'}
-                    className="h-4 w-8"
-                  />
-                </button>
-              ))}
-              {trapCount > 9 ? <span className="text-xs text-secondary">+{trapCount - 9}</span> : null}
+            <div className="mx-auto h-14 w-px bg-primary/60" />
+            <div
+              className={`w-36 rounded-2xl border-2 bg-white p-3 ${
+                balanced ? 'border-accent/60' : 'border-secondary/30'
+              }`}
+            >
+              <div className="mb-1 text-center text-xs text-secondary">Trap hanger (drop/remove)</div>
+              <div className="flex flex-col items-center gap-1">
+                {Array.from({ length: Math.min(trapCount, 8) }).map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setTrapCount((count) => Math.max(0, count - 1))}
+                    className="flex h-5 items-center justify-center rounded border border-transparent px-1 hover:border-secondary/30"
+                  >
+                    <Trapezoid
+                      size={8}
+                      fit="tight"
+                      direction={index % 2 === 0 ? 'up' : 'down'}
+                      className="h-4 w-8"
+                    />
+                  </button>
+                ))}
+                {trapCount > 8 ? <span className="text-xs text-secondary">+{trapCount - 8}</span> : null}
+              </div>
             </div>
           </motion.div>
         </div>
