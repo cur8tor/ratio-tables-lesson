@@ -5,19 +5,32 @@ import Trapezoid from '../primitives/Trapezoid'
 import type { StepComponentProps } from './types'
 
 type StepScaleBalanceProps = StepComponentProps & {
-  phase: 0 | 1 | 2
+  targetHex: number
+  requireDifferentFrom?: { hex: number; trap: number }
 }
 
-const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
+const StepScaleBalance = ({
+  targetHex,
+  requireDifferentFrom,
+  onReadyChange,
+  onCorrectChange,
+  registerCheck,
+}: StepScaleBalanceProps) => {
   const scaleContainerRef = useRef<HTMLDivElement | null>(null)
-  const [hexCount, setHexCount] = useState(1)
+  const [hexCount, setHexCount] = useState(targetHex)
   const [trapCount, setTrapCount] = useState(0)
-  const [phaseTwoBaseline, setPhaseTwoBaseline] = useState({ hex: 2, trap: 4 })
   const [containerWidth, setContainerWidth] = useState(900)
-  const previousPhase = useRef(phase)
+  const previousTarget = useRef(targetHex)
 
-  const minimumHexForPhase = phase === 0 ? 1 : 2
-  const effectiveHexCount = Math.max(hexCount, minimumHexForPhase)
+  useEffect(() => {
+    if (previousTarget.current !== targetHex) {
+      setHexCount(targetHex)
+      setTrapCount(0)
+      previousTarget.current = targetHex
+    }
+  }, [targetHex])
+
+  const effectiveHexCount = Math.max(hexCount, targetHex)
 
   const requiredTraps = effectiveHexCount * 2
   const balanced = trapCount === requiredTraps
@@ -45,27 +58,23 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
     return () => window.removeEventListener('resize', measure)
   }, [])
 
-  useEffect(() => {
-    if (phase !== previousPhase.current) {
-      if (phase === 2) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setPhaseTwoBaseline({ hex: effectiveHexCount, trap: trapCount })
-      }
-      previousPhase.current = phase
-    }
-  }, [effectiveHexCount, phase, trapCount])
-
   const solved =
-    phase === 0
-      ? balanced && effectiveHexCount === 1
-      : phase === 1
-        ? balanced && effectiveHexCount === 2
-        : balanced &&
-          (effectiveHexCount !== phaseTwoBaseline.hex || trapCount !== phaseTwoBaseline.trap)
+    balanced &&
+    effectiveHexCount >= targetHex &&
+    (!requireDifferentFrom ||
+      effectiveHexCount !== requireDifferentFrom.hex ||
+      trapCount !== requireDifferentFrom.trap)
 
   useEffect(() => {
-    onReadyChange(solved)
-  }, [onReadyChange, solved])
+    onReadyChange(true)
+    onCorrectChange?.(false)
+  }, [onCorrectChange, onReadyChange, targetHex])
+
+  useEffect(() => {
+    registerCheck?.(() => {
+      onCorrectChange?.(solved)
+    })
+  }, [onCorrectChange, registerCheck, solved])
 
   const balanceState = useMemo(() => {
     if (trapCount < requiredTraps) return 'Right side is lighter'
@@ -104,7 +113,10 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
                 <button
                   key={index}
                   type="button"
-                  onClick={() => setHexCount((count) => Math.max(0, count - 1))}
+                  onClick={() => {
+                    setHexCount((count) => Math.max(0, count - 1))
+                    onCorrectChange?.(false)
+                  }}
                   className="rounded border border-transparent hover:border-secondary/30"
                 >
                   <Hexagon size={10} fill="#FFD63B" className="h-7 w-7 sm:h-8 sm:w-8" />
@@ -123,6 +135,7 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
               event.preventDefault()
               if (event.dataTransfer.getData('shape') === 'trap') {
                 setTrapCount((count) => count + 1)
+                onCorrectChange?.(false)
               }
             }}
           >
@@ -132,7 +145,10 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
                 <button
                   key={index}
                   type="button"
-                  onClick={() => setTrapCount((count) => Math.max(0, count - 1))}
+                    onClick={() => {
+                      setTrapCount((count) => Math.max(0, count - 1))
+                      onCorrectChange?.(false)
+                    }}
                   className={`flex h-4 items-center justify-center rounded border px-1 ${
                     balanced
                       ? 'border-accent/30 hover:border-accent/60'
@@ -161,7 +177,10 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
           <button
             type="button"
             draggable
-            onClick={() => setHexCount((count) => count + 1)}
+            onClick={() => {
+              setHexCount((count) => count + 1)
+              onCorrectChange?.(false)
+            }}
             onDragStart={(event) => event.dataTransfer.setData('shape', 'hex')}
             className="flex h-12 w-16 items-center justify-center rounded-lg border border-secondary/25 bg-surface"
           >
@@ -170,7 +189,10 @@ const StepScaleBalance = ({ phase, onReadyChange }: StepScaleBalanceProps) => {
           <button
             type="button"
             draggable
-            onClick={() => setTrapCount((count) => count + 1)}
+            onClick={() => {
+              setTrapCount((count) => count + 1)
+              onCorrectChange?.(false)
+            }}
             onDragStart={(event) => event.dataTransfer.setData('shape', 'trap')}
             className="flex h-12 w-16 items-center justify-center rounded-lg border border-secondary/25 bg-surface"
           >

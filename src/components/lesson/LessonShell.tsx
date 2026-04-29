@@ -9,6 +9,7 @@ type LessonShellProps = {
   total: number
   prompt: string
   canContinue: boolean
+  isCorrect: boolean
   onContinue: () => void
   onBack: () => void
   canGoBack: boolean
@@ -21,6 +22,7 @@ const LessonShell = ({
   total,
   prompt,
   canContinue,
+  isCorrect,
   onContinue,
   onBack,
   canGoBack,
@@ -47,9 +49,18 @@ const LessonShell = ({
           </AnimatePresence>
         </div>
       </main>
-      <div className="fixed bottom-0 left-0 right-0 border-t border-secondary/20 bg-white/95 py-3 backdrop-blur">
+      <div
+        className={`fixed bottom-0 left-0 right-0 border-t py-3 backdrop-blur ${
+          isCorrect ? 'border-accent/30 bg-accent/15' : 'border-secondary/20 bg-white/95'
+        }`}
+      >
         <div className="flex justify-center">
-          <ContinueButton onClick={onContinue} disabled={!canContinue} label={buttonLabel} />
+          <ContinueButton
+            onClick={onContinue}
+            disabled={!canContinue}
+            label={buttonLabel}
+            success={isCorrect}
+          />
         </div>
       </div>
     </div>
