@@ -43,7 +43,7 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
           <div className="absolute left-1/2 top-10 z-10 h-24 w-1 -translate-x-1/2 bg-primary/70" />
           <div className="absolute left-1/2 top-[106px] h-16 w-10 -translate-x-1/2 rounded-t-full bg-primary/10" />
 
-          <div className="absolute left-1/2 top-10 h-2 w-4/5 -translate-x-1/2">
+          <div className="absolute left-1/2 top-10 h-2 w-3/5 -translate-x-1/2">
             <motion.div
               className="h-full w-full rounded-full bg-primary/70"
               animate={{ rotate: beamAngle }}
@@ -53,25 +53,20 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
           </div>
 
           <motion.div
-            className="absolute left-[22%] top-12 -translate-x-1/2"
+            className="absolute left-[20%] top-12 -translate-x-1/2"
             animate={{ y: leftYOffset }}
             transition={{ type: 'spring', stiffness: 160, damping: 18 }}
           >
             <div className="mx-auto h-14 w-px bg-primary/60" />
-            <div className="w-36 rounded-2xl border-2 border-secondary/30 bg-white p-3">
-              <div className="mb-1 text-center text-xs text-secondary">Hex hanger</div>
-              <div className="flex flex-col items-center gap-1">
-                {Array.from({ length: hexCount }).map((_, index) => (
-                  <Hexagon key={index} size={10} fill="#FFD63B" className="h-8 w-8" />
-                ))}
-              </div>
+            <div className="flex flex-col items-center gap-1">
+              {Array.from({ length: hexCount }).map((_, index) => (
+                <Hexagon key={index} size={10} fill="#FFD63B" className="h-8 w-8" />
+              ))}
             </div>
           </motion.div>
 
           <motion.div
-            className={`absolute left-[78%] top-12 -translate-x-1/2 ${
-              balanced ? 'border-accent/60' : 'border-secondary/30'
-            }`}
+            className="absolute left-[80%] top-12 -translate-x-1/2"
             animate={{ y: rightYOffset }}
             transition={{ type: 'spring', stiffness: 160, damping: 18 }}
             onDragOver={(event) => event.preventDefault()}
@@ -83,30 +78,27 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
             }}
           >
             <div className="mx-auto h-14 w-px bg-primary/60" />
-            <div
-              className={`w-36 rounded-2xl border-2 bg-white p-3 ${
-                balanced ? 'border-accent/60' : 'border-secondary/30'
-              }`}
-            >
-              <div className="mb-1 text-center text-xs text-secondary">Trap hanger (drop/remove)</div>
-              <div className="flex flex-col items-center gap-1">
-                {Array.from({ length: Math.min(trapCount, 8) }).map((_, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => setTrapCount((count) => Math.max(0, count - 1))}
-                    className="flex h-5 items-center justify-center rounded border border-transparent px-1 hover:border-secondary/30"
-                  >
-                    <Trapezoid
-                      size={8}
-                      fit="tight"
-                      direction={index % 2 === 0 ? 'up' : 'down'}
-                      className="h-4 w-8"
-                    />
-                  </button>
-                ))}
-                {trapCount > 8 ? <span className="text-xs text-secondary">+{trapCount - 8}</span> : null}
-              </div>
+            <div className="flex flex-col items-center gap-0.5">
+              {Array.from({ length: Math.min(trapCount, 8) }).map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setTrapCount((count) => Math.max(0, count - 1))}
+                  className={`flex h-4 items-center justify-center rounded border px-1 ${
+                    balanced
+                      ? 'border-accent/30 hover:border-accent/60'
+                      : 'border-transparent hover:border-secondary/30'
+                  }`}
+                >
+                  <Trapezoid
+                    size={8}
+                    fit="tight"
+                    direction={index % 2 === 0 ? 'up' : 'down'}
+                    className="h-4 w-8"
+                  />
+                </button>
+              ))}
+              {trapCount > 8 ? <span className="text-xs text-secondary">+{trapCount - 8}</span> : null}
             </div>
           </motion.div>
         </div>
