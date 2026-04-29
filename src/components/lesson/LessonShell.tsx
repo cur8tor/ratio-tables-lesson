@@ -13,6 +13,7 @@ type LessonShellProps = {
   onContinue: () => void
   onBack: () => void
   canGoBack: boolean
+  cfuStatuses: Array<boolean | null>
   buttonLabel?: string
   children: ReactNode
 }
@@ -26,12 +27,19 @@ const LessonShell = ({
   onContinue,
   onBack,
   canGoBack,
+  cfuStatuses,
   buttonLabel,
   children,
 }: LessonShellProps) => {
   return (
     <div className="relative min-h-screen bg-bg text-primary">
-      <ProgressBar step={step} total={total} onBack={onBack} canGoBack={canGoBack} />
+      <ProgressBar
+        step={step}
+        total={total}
+        onBack={onBack}
+        canGoBack={canGoBack}
+        cfuStatuses={cfuStatuses}
+      />
       <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center justify-center px-4 pb-36 pt-20">
         <div className="w-full space-y-8">
           <QuestionPrompt text={prompt} />

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import Hexagon from '../primitives/Hexagon'
 import Trapezoid from '../primitives/Trapezoid'
@@ -76,16 +76,10 @@ const StepScaleBalance = ({
     })
   }, [onCorrectChange, registerCheck, solved])
 
-  const balanceState = useMemo(() => {
-    if (trapCount < requiredTraps) return 'Right side is lighter'
-    if (trapCount > requiredTraps) return 'Right side is heavier'
-    return 'Balanced'
-  }, [requiredTraps, trapCount])
-
   return (
     <div className="flex w-full max-w-4xl flex-col items-center gap-6 pb-24">
       <div className="w-full p-2">
-        <div ref={scaleContainerRef} className="relative mx-auto h-64 w-full max-w-3xl overflow-hidden">
+        <div ref={scaleContainerRef} className="relative mx-auto h-72 w-full max-w-3xl">
           <div className="absolute left-1/2 top-10 z-10 h-24 w-1 -translate-x-1/2 bg-primary/70" />
           <div className="absolute left-1/2 top-[106px] h-16 w-10 -translate-x-1/2 rounded-t-full bg-primary/10" />
 
@@ -166,9 +160,6 @@ const StepScaleBalance = ({
               {trapCount > 8 ? <span className="text-xs text-secondary">+{trapCount - 8}</span> : null}
             </div>
           </motion.div>
-        </div>
-        <div className="mt-2 text-center text-sm">
-          <span className={balanced ? 'text-accent' : 'text-secondary'}>{balanceState}</span>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Hexagon from '../primitives/Hexagon'
 import NumberInput, { type InputStatus } from '../primitives/NumberInput'
 import Trapezoid from '../primitives/Trapezoid'
@@ -24,14 +24,8 @@ const StepTableStarter = ({
 }: StepTableStarterProps) => {
   const [value, setValue] = useState('')
   const [status, setStatus] = useState<InputStatus>('idle')
-  const [scaleHex, setScaleHex] = useState(given.hex ?? 0)
+  const [scaleHex, setScaleHex] = useState(given.hex ?? 1)
   const [scaleTrap, setScaleTrap] = useState(given.trap ?? 0)
-
-  const balanceState = useMemo(() => {
-    if (scaleTrap < scaleHex * 2) return 'Right side is lighter'
-    if (scaleTrap > scaleHex * 2) return 'Right side is heavier'
-    return 'Balanced'
-  }, [scaleHex, scaleTrap])
 
   useEffect(() => {
     onReadyChange(value.trim().length > 0)
@@ -50,74 +44,82 @@ const StepTableStarter = ({
     <div className="flex w-full max-w-4xl flex-col items-center gap-6">
       {showScale ? (
         <div className="w-full max-w-3xl">
-          <div className="relative h-44">
-            <div className="absolute left-1/2 top-8 h-2 w-[70%] -translate-x-1/2 rounded-full bg-primary/70" />
-            <div className="absolute left-1/2 top-8 h-16 w-1 -translate-x-1/2 bg-primary/70" />
-            <div className="absolute left-[20%] top-10 -translate-x-1/2">
-              <div className="mx-auto h-12 w-px bg-primary/50" />
+          <div className="relative h-64">
+            <div className="absolute left-1/2 top-10 h-2 w-[66%] -translate-x-1/2 rounded-full bg-primary/70" />
+            <div className="absolute left-1/2 top-10 h-16 w-1 -translate-x-1/2 bg-primary/70" />
+            <div className="absolute left-[22%] top-12 -translate-x-1/2">
+              <div className="mx-auto h-16 w-px bg-primary/50" />
               <div className="flex flex-col items-center gap-1">
-                {Array.from({ length: Math.max(1, scaleHex) }).map((_, index) => (
-                  <Hexagon key={index} size={9} fill="#FFD63B" className="h-6 w-6" />
-                ))}
-              </div>
-            </div>
-            <div className="absolute left-[80%] top-10 -translate-x-1/2">
-              <div className="mx-auto h-12 w-px bg-primary/50" />
-              <div className="flex flex-col items-center gap-0.5">
-                {Array.from({ length: Math.max(1, scaleTrap) }).slice(0, 12).map((_, index) => (
-                  <Trapezoid
+                {Array.from({ length: Math.max(0, scaleHex) }).map((_, index) => (
+                  <button
                     key={index}
-                    size={8}
-                    fit="tight"
-                    direction={index % 2 === 0 ? 'up' : 'down'}
-                    className="h-3 w-5"
-                  />
+                    type="button"
+                    onClick={() => {
+                      setScaleHex((count) => Math.max(0, count - 1))
+                      onCorrectChange?.(false)
+                    }}
+                    className="rounded border border-transparent hover:border-secondary/30"
+                  >
+                    <Hexagon size={9} fill="#FFD63B" className="h-6 w-6" />
+                  </button>
                 ))}
               </div>
             </div>
-          </div>
-          <div className="text-center text-sm text-secondary">{balanceState}</div>
-          <div className="mt-2 flex justify-center gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => setScaleHex((count) => Math.max(0, count - 1))}
-              className="rounded border border-secondary/30 px-2 py-1"
+            <div
+              className="absolute left-[78%] top-12 -translate-x-1/2"
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={(event) => {
+                event.preventDefault()
+                if (event.dataTransfer.getData('shape') === 'trap') {
+                  setScaleTrap((count) => count + 1)
+                  onCorrectChange?.(false)
+                }
+              }}
             >
-              - hex
-            </button>
-            <button
-              type="button"
-              onClick={() => setScaleHex((count) => count + 1)}
-              className="rounded border border-secondary/30 px-2 py-1"
-            >
-              + hex
-            </button>
-            <button
-              type="button"
-              onClick={() => setScaleTrap((count) => Math.max(0, count - 1))}
-              className="rounded border border-secondary/30 px-2 py-1"
-            >
-              - trap
-            </button>
-            <button
-              type="button"
-              onClick={() => setScaleTrap((count) => count + 1)}
-              className="rounded border border-secondary/30 px-2 py-1"
-            >
-              + trap
-            </button>
+              <div className="mx-auto h-16 w-px bg-primary/50" />
+              <div className="flex flex-col items-center gap-0.5">
+                {Array.from({ length: Math.max(0, scaleTrap) }).slice(0, 12).map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => {
+                      setScaleTrap((count) => Math.max(0, count - 1))
+                      onCorrectChange?.(false)
+                    }}
+                    className="rounded border border-transparent hover:border-secondary/30"
+                  >
+                    <Trapezoid
+                      size={8}
+                      fit="tight"
+                      direction={index % 2 === 0 ? 'up' : 'down'}
+                      className="h-3 w-5"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       ) : null}
 
       <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-secondary/20 bg-surface">
         <table className="w-full border-collapse text-center">
+          <colgroup>
+            <col style={{ width: '50%' }} />
+            <col style={{ width: '50%' }} />
+          </colgroup>
           <thead>
             <tr className="border-b border-secondary/20">
               <th className="border-r border-secondary/20 px-4 py-3 text-sm font-medium text-secondary">
-                Hexagons
+                <div className="flex justify-center">
+                  <Hexagon size={9} fill="#FFD63B" className="h-5 w-5" />
+                </div>
               </th>
-              <th className="px-4 py-3 text-sm font-medium text-secondary">Trapezoids</th>
+              <th className="px-4 py-3 text-sm font-medium text-secondary">
+                <div className="flex justify-center">
+                  <Trapezoid size={8} fit="tight" direction="up" className="h-3 w-5" />
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -166,6 +168,37 @@ const StepTableStarter = ({
           </tbody>
         </table>
       </div>
+
+      {showScale ? (
+        <div className="fixed bottom-24 left-1/2 z-10 w-[92%] max-w-sm -translate-x-1/2 rounded-2xl border border-secondary/20 bg-white/95 p-3 shadow-sm backdrop-blur">
+          <div className="flex items-center justify-center gap-3">
+            <button
+              type="button"
+              draggable
+              onClick={() => {
+                setScaleHex((count) => count + 1)
+                onCorrectChange?.(false)
+              }}
+              onDragStart={(event) => event.dataTransfer.setData('shape', 'hex')}
+              className="flex h-12 w-16 items-center justify-center rounded-lg border border-secondary/25 bg-surface"
+            >
+              <Hexagon size={10} fill="#FFD63B" className="h-7 w-7" />
+            </button>
+            <button
+              type="button"
+              draggable
+              onClick={() => {
+                setScaleTrap((count) => count + 1)
+                onCorrectChange?.(false)
+              }}
+              onDragStart={(event) => event.dataTransfer.setData('shape', 'trap')}
+              className="flex h-12 w-16 items-center justify-center rounded-lg border border-secondary/25 bg-surface"
+            >
+              <Trapezoid size={10} fit="tight" direction="up" className="h-5 w-8" />
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

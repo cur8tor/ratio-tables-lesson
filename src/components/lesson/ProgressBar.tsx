@@ -3,9 +3,10 @@ type ProgressBarProps = {
   total: number
   onBack: () => void
   canGoBack: boolean
+  cfuStatuses: Array<boolean | null>
 }
 
-const ProgressBar = ({ step, total, onBack, canGoBack }: ProgressBarProps) => {
+const ProgressBar = ({ step, total, onBack, canGoBack, cfuStatuses }: ProgressBarProps) => {
   const percent = Math.min(100, Math.max(0, (step / total) * 100))
 
   return (
@@ -24,6 +25,20 @@ const ProgressBar = ({ step, total, onBack, canGoBack }: ProgressBarProps) => {
             className="h-full rounded-full bg-accent transition-all duration-300 ease-out"
             style={{ width: `${percent}%` }}
           />
+        </div>
+        <div className="flex items-center gap-2">
+          {cfuStatuses.map((status, index) => (
+            <span
+              key={index}
+              className={`h-3 w-6 rounded-full border ${
+                status === true
+                  ? 'border-accent/60 bg-accent'
+                  : status === false
+                    ? 'border-secondary/40 bg-secondary/70'
+                    : 'border-secondary/30 bg-secondary/20'
+              }`}
+            />
+          ))}
         </div>
         <div className="min-w-14 text-right text-xl font-semibold text-primary">
           {step} <span className="text-yellow-500">⚡</span>

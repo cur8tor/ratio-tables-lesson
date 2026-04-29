@@ -7,21 +7,22 @@ import StepTableStarter from './components/steps/StepTableStarter'
 
 function App() {
   const prompts = [
-    'Let’s set a goal before we begin.',
-    'Balance 1 hexagon.',
-    'Balance 2 hexagons.',
-    'Create your own different balanced hanger.',
-    'Complete row 1 in the table.',
-    'Add row 2 for 3 hexagons.',
-    'Add row 3 for 10 trapezoids.',
-    'Check for understanding: 4 hexagons -> ? trapezoids.',
-    'Check for understanding: 14 trapezoids -> ? hexagons.',
-    'Final check: 9 hexagons -> ? trapezoids.',
+    'Goal',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
   ]
   const [currentStep, setCurrentStep] = useState(0)
   const [canPressCheck, setCanPressCheck] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
   const [checkFn, setCheckFn] = useState<() => void>(() => () => {})
+  const [cfuStatuses, setCfuStatuses] = useState<Array<boolean | null>>([null, null, null])
 
   const isComplete = currentStep >= prompts.length
 
@@ -35,10 +36,20 @@ function App() {
   }
 
   const renderStep = () => {
+    const handleCorrectChange = (ok: boolean) => {
+      setIsCorrect(ok)
+      if (currentStep >= 7 && currentStep <= 9) {
+        const cfuIndex = currentStep - 7
+        setCfuStatuses((current) =>
+          current.map((status, index) => (index === cfuIndex ? ok : status)),
+        )
+      }
+    }
+
     const common = {
       onReadyChange: setCanPressCheck,
       onCorrect: advanceStep,
-      onCorrectChange: setIsCorrect,
+      onCorrectChange: handleCorrectChange,
       registerCheck: (fn: () => void) => setCheckFn(() => fn),
     }
 
@@ -93,6 +104,7 @@ function App() {
             setCanPressCheck(false)
             setIsCorrect(false)
             setCheckFn(() => () => {})
+            setCfuStatuses([null, null, null])
           }}
         />
       </div>
@@ -101,7 +113,7 @@ function App() {
 
   return (
     <LessonShell
-      step={currentStep + 1}
+      step={Math.min(prompts.length, currentStep + 1 + (isCorrect ? 1 : 0))}
       total={prompts.length}
       prompt={prompts[currentStep]}
       canContinue={canPressCheck}
@@ -113,6 +125,7 @@ function App() {
         setIsCorrect(false)
         setCheckFn(() => () => {})
       }}
+      cfuStatuses={cfuStatuses}
       buttonLabel={currentStep === 0 ? 'Start' : isCorrect ? 'Continue' : 'Check'}
       onContinue={() => {
         if (!canPressCheck) return
