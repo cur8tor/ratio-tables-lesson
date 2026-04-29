@@ -41,12 +41,14 @@ const StepScaleBalance = ({ hexCount, onReadyChange }: StepScaleBalanceProps) =>
           <div className="absolute left-1/2 top-10 z-10 h-24 w-1 -translate-x-1/2 bg-primary/70" />
           <div className="absolute left-1/2 top-[106px] h-16 w-10 -translate-x-1/2 rounded-t-full bg-primary/10" />
 
-          <motion.div
-            className="absolute left-1/2 top-10 h-2 w-4/5 -translate-x-1/2 rounded-full bg-primary/70"
-            animate={{ rotate: beamAngle }}
-            transition={{ type: 'spring', stiffness: 160, damping: 18 }}
-            style={{ transformOrigin: 'center center' }}
-          />
+          <div className="absolute left-1/2 top-10 h-2 w-4/5 -translate-x-1/2">
+            <motion.div
+              className="h-full w-full rounded-full bg-primary/70"
+              animate={{ rotate: beamAngle }}
+              transition={{ type: 'spring', stiffness: 160, damping: 18 }}
+              style={{ transformOrigin: 'center center' }}
+            />
+          </div>
 
           <motion.div
             className="absolute left-[10%] top-6 h-36 w-36 rounded-3xl border-2 border-secondary/30 bg-white p-4"
