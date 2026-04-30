@@ -58,8 +58,10 @@ const StepScaleBalance = ({
   const balanced = effectiveTrapCount === requiredTraps
   const imbalance = effectiveTrapCount - requiredTraps
   const beamAngle = Math.max(-14, Math.min(14, imbalance * 4))
-  const beamLength = Math.max(220, Math.min(560, containerWidth * 0.82))
-  const beamY = 64
+  const beamLength = Math.max(160, Math.min(360, containerWidth * 0.58))
+  const beamY = 78
+  const spillDirection = imbalance === 0 ? 0 : imbalance > 0 ? 1 : -1
+  const spillStrength = Math.min(1, Math.abs(imbalance) / 3)
   const angleRadians = (beamAngle * Math.PI) / 180
   const halfProjectionX = (beamLength / 2) * Math.cos(angleRadians)
   const halfProjectionY = (beamLength / 2) * Math.sin(angleRadians)
@@ -113,9 +115,34 @@ const StepScaleBalance = ({
   return (
     <div className="flex w-full max-w-4xl flex-col items-center gap-3 pb-6 sm:gap-6 sm:pb-24">
       <div className="w-full p-2">
-        <div ref={scaleContainerRef} className="relative mx-auto h-56 w-full max-w-3xl sm:h-80">
-          <div className="absolute left-1/2 top-12 z-10 h-24 w-1 -translate-x-1/2 bg-primary/70" />
-          <div className="absolute left-1/2 top-[108px] h-16 w-10 -translate-x-1/2 rounded-t-full bg-primary/10" />
+        <div
+          ref={scaleContainerRef}
+          className="relative mx-auto h-56 w-full max-w-2xl overflow-hidden rounded-2xl border border-secondary/20 bg-surface/70 sm:h-80"
+        >
+          <div className="absolute left-1/2 top-0 z-10 h-[82px] w-1 -translate-x-1/2 bg-primary/70" />
+          <div className="absolute left-1/2 top-[106px] h-14 w-12 -translate-x-1/2 rounded-t-full bg-primary/10" />
+
+          <div className="absolute left-1/2 top-[102px] h-12 w-16 -translate-x-1/2 overflow-hidden rounded-b-[28px] border border-primary/20 bg-white/60">
+            <motion.div
+              className="absolute bottom-0 left-[-20%] h-6 w-[140%] bg-sky-300/70"
+              animate={{ rotate: beamAngle * 0.85, y: -spillStrength * 2 }}
+              transition={{ type: 'spring', stiffness: 180, damping: 18 }}
+              style={{ transformOrigin: 'center bottom' }}
+            />
+          </div>
+          {spillDirection !== 0 ? (
+            <motion.div
+              className={`absolute top-[116px] h-32 w-2 rounded-full bg-sky-300/70 ${
+                spillDirection > 0 ? 'left-[52%]' : 'right-[52%]'
+              }`}
+              animate={{
+                opacity: [0.35, 0.85, 0.45],
+                scaleY: [0.6, 1.12, 0.8],
+                x: [0, spillDirection * 5, spillDirection * 2],
+              }}
+              transition={{ duration: 1.05, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+            />
+          ) : null}
 
           <div
             className="absolute left-1/2 h-2 -translate-x-1/2"
