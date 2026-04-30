@@ -7,8 +7,23 @@ import StepTableStarter from './components/steps/StepTableStarter'
 
 function App() {
   const prompts = ['', '', '', '', '', '', '', '', '', '']
+  const faqItems = [
+    {
+      title: 'Why this lesson design?',
+      body: 'This demo uses a concrete-to-abstract progression so learners first feel the ratio through balancing shapes, then encode that same structure in a table. The goal is to show conceptual understanding before procedural fluency.',
+    },
+    {
+      title: 'Where does this fit in scope and sequence?',
+      body: 'This lesson fits early in a proportional reasoning unit, right after introducing equivalent representations and before unit rates and proportional graphs. It can serve as a bridge from manipulatives to symbolic work.',
+    },
+    {
+      title: 'What would be added next?',
+      body: 'Future iterations would include two additional levels for scaling strategies and transfer tasks, plus teacher-facing notes, multilingual copy variants, and richer feedback states for common misconceptions.',
+    },
+  ]
   const [screen, setScreen] = useState<'home' | 'lesson'>('home')
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null)
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0)
   const [currentStep, setCurrentStep] = useState(0)
   const [canPressCheck, setCanPressCheck] = useState(false)
   const [stepPassed, setStepPassed] = useState(false)
@@ -130,6 +145,32 @@ function App() {
             <div className="w-full rounded-2xl border border-secondary/20 bg-white px-6 py-4 opacity-60">
               <p className="text-sm font-semibold tracking-wide text-secondary">LEVEL 3</p>
               <p className="text-2xl font-semibold text-primary">Ratio Tables</p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-secondary/20 bg-white p-4">
+            <h2 className="px-2 pb-3 text-lg font-semibold text-primary">About This Demo</h2>
+            <div className="space-y-2">
+              {faqItems.map((item, index) => {
+                const isOpen = openFaqIndex === index
+                return (
+                  <div key={item.title} className="overflow-hidden rounded-xl border border-secondary/20">
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaqIndex((current) => (current === index ? null : index))}
+                      className="flex w-full items-center justify-between bg-[#F8FAFC] px-4 py-3 text-left"
+                    >
+                      <span className="text-sm font-semibold text-primary">{item.title}</span>
+                      <span className="text-base font-semibold text-secondary">{isOpen ? '−' : '+'}</span>
+                    </button>
+                    {isOpen ? (
+                      <div className="bg-white px-4 py-3">
+                        <p className="text-sm leading-relaxed text-secondary">{item.body}</p>
+                      </div>
+                    ) : null}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
