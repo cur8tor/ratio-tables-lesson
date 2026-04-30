@@ -4,6 +4,7 @@ import CompletionScreen from './components/steps/CompletionScreen'
 import StepIntroGoal from './components/steps/StepIntroGoal'
 import StepScaleBalance from './components/steps/StepScaleBalance'
 import StepTableStarter from './components/steps/StepTableStarter'
+import type { ScaleControls } from './components/steps/types'
 
 function App() {
   const prompts = ['', '', '', '', '', '', '', '', '', '']
@@ -58,6 +59,7 @@ function App() {
   const [hasChecked, setHasChecked] = useState(false)
   const [checkFn, setCheckFn] = useState<(() => boolean) | null>(null)
   const [isCheckRegistered, setIsCheckRegistered] = useState(false)
+  const [scaleControls, setScaleControls] = useState<ScaleControls | null>(null)
   const [cfuStatuses, setCfuStatuses] = useState<Array<boolean | null>>([null, null, null])
 
   const isComplete = currentStep >= prompts.length
@@ -69,6 +71,7 @@ function App() {
     setHasChecked(false)
     setCheckFn(null)
     setIsCheckRegistered(false)
+    setScaleControls(null)
     setCfuStatuses([null, null, null])
   }, [])
 
@@ -80,6 +83,7 @@ function App() {
       setHasChecked(false)
       setCheckFn(null)
       setIsCheckRegistered(false)
+      setScaleControls(null)
     }
   }
 
@@ -129,6 +133,7 @@ function App() {
       onSubmitCheck: handleContinue,
       onCorrectChange: handleCorrectChange,
       registerCheck: handleRegisterCheck,
+      registerScaleControls: setScaleControls,
     }
 
     if (currentStep === 0) return <StepIntroGoal {...common} />
@@ -278,6 +283,7 @@ function App() {
         setHasChecked(false)
         setCheckFn(null)
         setIsCheckRegistered(false)
+        setScaleControls(null)
       }}
       onForward={() => {
         setCurrentStep((step) => Math.min(prompts.length - 1, step + 1))
@@ -286,12 +292,15 @@ function App() {
         setHasChecked(false)
         setCheckFn(null)
         setIsCheckRegistered(false)
+        setScaleControls(null)
       }}
       onClose={() => {
         setScreen('home')
         setSelectedLevel(null)
+        setScaleControls(null)
       }}
       cfuStatuses={cfuStatuses}
+      scaleControls={scaleControls}
       buttonLabel={currentStep === 0 ? '▶' : stepPassed ? '→' : hasChecked ? '↻' : '✓'}
       buttonAriaLabel={
         currentStep === 0 ? 'Start' : stepPassed ? 'Continue' : hasChecked ? 'Try again' : 'Check'

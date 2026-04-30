@@ -1,7 +1,12 @@
 import { useEffect } from 'react'
 import type { StepComponentProps } from './types'
 
-const StepIntroGoal = ({ onReadyChange, onCorrectChange, registerCheck }: StepComponentProps) => {
+const StepIntroGoal = ({
+  onReadyChange,
+  onCorrectChange,
+  registerCheck,
+  registerScaleControls,
+}: StepComponentProps) => {
   useEffect(() => {
     onReadyChange(true)
     onCorrectChange?.(true)
@@ -13,6 +18,10 @@ const StepIntroGoal = ({ onReadyChange, onCorrectChange, registerCheck }: StepCo
       return true
     })
   }, [onCorrectChange, registerCheck])
+
+  useEffect(() => {
+    registerScaleControls?.(null)
+  }, [registerScaleControls])
 
   return (
     <div className="mx-auto max-w-2xl rounded-2xl border border-secondary/20 bg-surface p-8">

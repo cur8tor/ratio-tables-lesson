@@ -19,6 +19,7 @@ const StepTableStarter = ({
   answer,
   history = [],
   showScale = false,
+  registerScaleControls,
   onSubmitCheck,
   onReadyChange,
   onCorrectChange,
@@ -75,6 +76,30 @@ const StepTableStarter = ({
     })
   }, [onCorrectChange, registerCheck])
 
+  useEffect(() => {
+    if (!showScale) {
+      registerScaleControls?.(null)
+      return
+    }
+
+    registerScaleControls?.({
+      canAddHex: fixedHex === undefined,
+      canAddTrap: fixedTrap === undefined,
+      onAddHex: () => {
+        if (fixedHex) return
+        setScaleHex((count) => count + 1)
+        onCorrectChange?.(false)
+      },
+      onAddTrap: () => {
+        if (fixedTrap) return
+        setScaleTrap((count) => count + 1)
+        onCorrectChange?.(false)
+      },
+    })
+
+    return () => registerScaleControls?.(null)
+  }, [fixedHex, fixedTrap, onCorrectChange, registerScaleControls, showScale])
+
   const requiredTraps = scaleHex * 2
   const imbalance = scaleTrap - requiredTraps
   const beamAngle = Math.max(-14, Math.min(14, imbalance * 4))
@@ -91,6 +116,77 @@ const StepTableStarter = ({
 
   return (
     <div className="flex w-full max-w-4xl flex-col items-center gap-3 sm:gap-6">
+      <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-secondary/20 bg-surface">
+        <table className="w-full border-collapse text-center">
+          <colgroup>
+            <col style={{ width: '50%' }} />
+            <col style={{ width: '50%' }} />
+          </colgroup>
+          <thead>
+            <tr className="border-b border-secondary/20">
+              <th className="border-r border-secondary/20 px-3 py-2 text-sm font-medium text-secondary sm:px-4 sm:py-3">
+                <div className="flex justify-center">
+                  <Hexagon size={9} fill="#FFD63B" className="h-5 w-5" />
+                </div>
+              </th>
+              <th className="px-3 py-2 text-sm font-medium text-secondary sm:px-4 sm:py-3">
+                <div className="flex justify-center">
+                  <Trapezoid size={8} fit="tight" direction="up" className="h-3 w-5" />
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {history.map((row, index) => (
+              <tr key={index} className="border-b border-secondary/15">
+                <td className="border-r border-secondary/15 px-3 py-2 sm:px-4 sm:py-3">{row.hex}</td>
+                <td className="px-3 py-2 sm:px-4 sm:py-3">{row.trap}</td>
+              </tr>
+            ))}
+            <tr>
+              <td className="border-r border-secondary/15 px-3 py-2 sm:px-4 sm:py-3">
+                {given.hex !== undefined ? (
+                  given.hex
+                ) : (
+                  <NumberInput
+                    value={value}
+                    onChange={(next) => {
+                      setValue(next)
+                      setStatus('idle')
+                    }}
+                    onSubmit={() => {
+                      onSubmitCheck?.()
+                    }}
+                    status={status}
+                    ariaLabel="table input"
+                    className="h-10 w-20 text-lg"
+                  />
+                )}
+              </td>
+              <td className="px-3 py-2 sm:px-4 sm:py-3">
+                {given.trap === undefined ? (
+                  <NumberInput
+                    value={value}
+                    onChange={(next) => {
+                      setValue(next)
+                      setStatus('idle')
+                    }}
+                    onSubmit={() => {
+                      onSubmitCheck?.()
+                    }}
+                    status={status}
+                    ariaLabel="table input"
+                    className="h-10 w-20 text-lg"
+                  />
+                ) : (
+                  given.trap
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       {showScale ? (
         <div className="w-full p-2">
           <div ref={scaleContainerRef} className="relative mx-auto h-56 w-full max-w-3xl sm:h-80">
@@ -181,114 +277,6 @@ const StepTableStarter = ({
                 ))}
               </div>
             </motion.div>
-          </div>
-        </div>
-      ) : null}
-
-      <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-secondary/20 bg-surface">
-        <table className="w-full border-collapse text-center">
-          <colgroup>
-            <col style={{ width: '50%' }} />
-            <col style={{ width: '50%' }} />
-          </colgroup>
-          <thead>
-            <tr className="border-b border-secondary/20">
-              <th className="border-r border-secondary/20 px-3 py-2 text-sm font-medium text-secondary sm:px-4 sm:py-3">
-                <div className="flex justify-center">
-                  <Hexagon size={9} fill="#FFD63B" className="h-5 w-5" />
-                </div>
-              </th>
-              <th className="px-3 py-2 text-sm font-medium text-secondary sm:px-4 sm:py-3">
-                <div className="flex justify-center">
-                  <Trapezoid size={8} fit="tight" direction="up" className="h-3 w-5" />
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {history.map((row, index) => (
-              <tr key={index} className="border-b border-secondary/15">
-                <td className="border-r border-secondary/15 px-3 py-2 sm:px-4 sm:py-3">{row.hex}</td>
-                <td className="px-3 py-2 sm:px-4 sm:py-3">{row.trap}</td>
-              </tr>
-            ))}
-            <tr>
-              <td className="border-r border-secondary/15 px-3 py-2 sm:px-4 sm:py-3">
-                {given.hex !== undefined ? (
-                  given.hex
-                ) : (
-                  <NumberInput
-                    value={value}
-                    onChange={(next) => {
-                      setValue(next)
-                      setStatus('idle')
-                    }}
-                    onSubmit={() => {
-                      onSubmitCheck?.()
-                    }}
-                    status={status}
-                    ariaLabel="table input"
-                    className="h-10 w-20 text-lg"
-                  />
-                )}
-              </td>
-              <td className="px-3 py-2 sm:px-4 sm:py-3">
-                {given.trap === undefined ? (
-                  <NumberInput
-                    value={value}
-                    onChange={(next) => {
-                      setValue(next)
-                      setStatus('idle')
-                    }}
-                    onSubmit={() => {
-                      onSubmitCheck?.()
-                    }}
-                    status={status}
-                    ariaLabel="table input"
-                    className="h-10 w-20 text-lg"
-                  />
-                ) : (
-                  given.trap
-                )}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      {showScale ? (
-        <div className="mt-2 w-[92%] max-w-sm rounded-2xl border border-secondary/20 bg-white/95 p-2.5 shadow-sm backdrop-blur sm:p-3">
-          <div className="flex items-center justify-center gap-3">
-            <button
-              type="button"
-              draggable
-              onClick={() => {
-                if (fixedHex) return
-                setScaleHex((count) => count + 1)
-                onCorrectChange?.(false)
-              }}
-              onDragStart={(event) => event.dataTransfer.setData('shape', 'hex')}
-              className={`flex h-12 w-16 items-center justify-center rounded-lg border bg-surface ${
-                fixedHex ? 'cursor-not-allowed border-secondary/10 opacity-40' : 'border-secondary/25'
-              }`}
-            >
-              <Hexagon size={10} fill="#FFD63B" className="h-7 w-7" />
-            </button>
-            <button
-              type="button"
-              draggable
-              onClick={() => {
-                if (fixedTrap) return
-                setScaleTrap((count) => count + 1)
-                onCorrectChange?.(false)
-              }}
-              onDragStart={(event) => event.dataTransfer.setData('shape', 'trap')}
-              className={`flex h-12 w-16 items-center justify-center rounded-lg border bg-surface ${
-                fixedTrap ? 'cursor-not-allowed border-secondary/10 opacity-40' : 'border-secondary/25'
-              }`}
-            >
-              <Trapezoid size={10} fit="tight" direction="up" className="h-5 w-8" />
-            </button>
           </div>
         </div>
       ) : null}

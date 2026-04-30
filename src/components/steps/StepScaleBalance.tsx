@@ -16,6 +16,7 @@ const StepScaleBalance = ({
   fixedTrap,
   initialHex = 0,
   initialTrap = 0,
+  registerScaleControls,
   onReadyChange,
   onCorrectChange,
   registerCheck,
@@ -99,8 +100,18 @@ const StepScaleBalance = ({
     })
   }, [fixedHex, fixedTrap, onCorrectChange, registerCheck])
 
+  useEffect(() => {
+    registerScaleControls?.({
+      canAddHex: fixedHex === undefined,
+      canAddTrap: fixedTrap === undefined,
+      onAddHex: () => updateHexCount((count) => count + 1),
+      onAddTrap: () => updateTrapCount((count) => count + 1),
+    })
+    return () => registerScaleControls?.(null)
+  }, [fixedHex, fixedTrap, registerScaleControls])
+
   return (
-    <div className="flex w-full max-w-4xl flex-col items-center gap-3 pb-24 sm:gap-6 sm:pb-24">
+    <div className="flex w-full max-w-4xl flex-col items-center gap-3 pb-6 sm:gap-6 sm:pb-24">
       <div className="w-full p-2">
         <div ref={scaleContainerRef} className="relative mx-auto h-56 w-full max-w-3xl sm:h-80">
           <div className="absolute left-1/2 top-12 z-10 h-24 w-1 -translate-x-1/2 bg-primary/70" />
@@ -186,41 +197,6 @@ const StepScaleBalance = ({
               ))}
             </div>
           </motion.div>
-        </div>
-      </div>
-
-      <div className="mt-2 w-[92%] max-w-sm rounded-2xl border border-secondary/20 bg-white/95 p-2.5 shadow-sm backdrop-blur sm:p-3">
-        <div className="flex items-center justify-center gap-3">
-          <button
-            type="button"
-            draggable
-            onClick={() => {
-              updateHexCount((count) => count + 1)
-            }}
-            onDragStart={(event) => event.dataTransfer.setData('shape', 'hex')}
-            className={`flex h-12 w-16 items-center justify-center rounded-lg border bg-surface ${
-              fixedHex !== undefined
-                ? 'cursor-not-allowed border-secondary/10 opacity-40'
-                : 'border-secondary/25'
-            }`}
-          >
-            <Hexagon size={10} fill="#FFD63B" className="h-7 w-7" />
-          </button>
-          <button
-            type="button"
-            draggable
-            onClick={() => {
-              updateTrapCount((count) => count + 1)
-            }}
-            onDragStart={(event) => event.dataTransfer.setData('shape', 'trap')}
-            className={`flex h-12 w-16 items-center justify-center rounded-lg border bg-surface ${
-              fixedTrap !== undefined
-                ? 'cursor-not-allowed border-secondary/10 opacity-40'
-                : 'border-secondary/25'
-            }`}
-          >
-            <Trapezoid size={10} fit="tight" direction="up" className="h-5 w-8" />
-          </button>
         </div>
       </div>
     </div>

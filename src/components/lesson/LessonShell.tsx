@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import ContinueButton from './ContinueButton'
 import ProgressBar from './ProgressBar'
 import QuestionPrompt from './QuestionPrompt'
+import type { ScaleControls } from '../steps/types'
 
 type LessonShellProps = {
   step: number
@@ -20,6 +21,7 @@ type LessonShellProps = {
   buttonLabel?: string
   buttonAriaLabel?: string
   buttonWarning?: boolean
+  scaleControls?: ScaleControls | null
   children: ReactNode
 }
 
@@ -39,6 +41,7 @@ const LessonShell = ({
   buttonLabel,
   buttonAriaLabel,
   buttonWarning = false,
+  scaleControls = null,
   children,
 }: LessonShellProps) => {
   return (
@@ -75,7 +78,56 @@ const LessonShell = ({
           isCorrect ? 'border-accent/30 bg-accent/15' : 'border-secondary/20 bg-white/95'
         }`}
       >
-        <div className="flex justify-end px-4 sm:justify-center sm:px-0">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4">
+          <div className="flex items-center gap-2">
+            {scaleControls ? (
+              <>
+                <button
+                  type="button"
+                  onClick={scaleControls.onAddHex}
+                  disabled={!scaleControls.canAddHex}
+                  aria-label="Add hexagon"
+                  className="flex h-12 w-12 items-center justify-center rounded-full border border-secondary/20 bg-white disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <span className="inline-flex h-7 w-7 items-center justify-center">
+                    <span className="relative inline-flex">
+                      {/* icon only control */}
+                      <span className="sr-only">Hexagon</span>
+                    </span>
+                    {/* keep visual shape */}
+                    <span aria-hidden="true">
+                      <svg viewBox="-11 -10 22 20" className="h-7 w-7">
+                        <polygon
+                          points="10,0 5,-8.66 -5,-8.66 -10,0 -5,8.66 5,8.66"
+                          fill="#FFD63B"
+                          stroke="#1F2937"
+                          strokeWidth="1.5"
+                        />
+                      </svg>
+                    </span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={scaleControls.onAddTrap}
+                  disabled={!scaleControls.canAddTrap}
+                  aria-label="Add trapezoid"
+                  className="flex h-12 w-12 items-center justify-center rounded-full border border-secondary/20 bg-white disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <span aria-hidden="true">
+                    <svg viewBox="-11 -10 22 20" className="h-7 w-7">
+                      <polygon
+                        points="-10,0 10,0 5,8.66 -5,8.66"
+                        fill="#DC2626"
+                        stroke="#1F2937"
+                        strokeWidth="1.5"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </>
+            ) : null}
+          </div>
           <ContinueButton
             onClick={onContinue}
             disabled={!canContinue}
