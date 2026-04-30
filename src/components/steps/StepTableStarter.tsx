@@ -90,10 +90,10 @@ const StepTableStarter = ({
   const rightTipTop = beamY + halfProjectionY
 
   return (
-    <div className="flex w-full max-w-4xl flex-col items-center gap-5 sm:gap-6">
+    <div className="flex w-full max-w-4xl flex-col items-center gap-4 sm:gap-6">
       {showScale ? (
         <div className="w-full p-2">
-          <div ref={scaleContainerRef} className="relative mx-auto h-[19rem] w-full max-w-3xl sm:h-80">
+          <div ref={scaleContainerRef} className="relative mx-auto h-64 w-full max-w-3xl sm:h-80">
             <div className="absolute left-1/2 top-12 z-10 h-24 w-1 -translate-x-1/2 bg-primary/70" />
             <div className="absolute left-1/2 top-[108px] h-16 w-10 -translate-x-1/2 rounded-t-full bg-primary/10" />
 
@@ -257,7 +257,7 @@ const StepTableStarter = ({
       </div>
 
       {showScale ? (
-        <div className="fixed bottom-24 left-1/2 z-10 w-[92%] max-w-sm -translate-x-1/2 rounded-2xl border border-secondary/20 bg-white/95 p-3 shadow-sm backdrop-blur">
+        <div className="fixed bottom-20 left-1/2 z-10 w-[92%] max-w-sm -translate-x-1/2 rounded-2xl border border-secondary/20 bg-white/95 p-2.5 shadow-sm backdrop-blur sm:bottom-24 sm:p-3">
           <div className="flex items-center justify-center gap-3">
             <button
               type="button"

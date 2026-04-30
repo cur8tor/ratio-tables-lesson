@@ -53,7 +53,7 @@ const LessonShell = ({
         canGoForward={canGoForward}
         cfuStatuses={cfuStatuses}
       />
-      <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center justify-start px-3 pb-44 pt-16 sm:px-4 sm:pb-36 sm:pt-20">
+      <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center justify-start px-3 pb-40 pt-16 sm:px-4 sm:pb-36 sm:pt-20">
         <div className="w-full space-y-5 sm:space-y-8">
           <QuestionPrompt text={prompt} />
           <AnimatePresence mode="wait">
@@ -75,7 +75,7 @@ const LessonShell = ({
           isCorrect ? 'border-accent/30 bg-accent/15' : 'border-secondary/20 bg-white/95'
         }`}
       >
-        <div className="flex justify-center">
+        <div className="flex justify-end px-4 sm:justify-center sm:px-0">
           <ContinueButton
             onClick={onContinue}
             disabled={!canContinue}
