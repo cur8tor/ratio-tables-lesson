@@ -42,7 +42,7 @@ const LessonShell = ({
   children,
 }: LessonShellProps) => {
   return (
-    <div className="relative min-h-screen bg-bg text-primary">
+    <div className="relative min-h-screen overflow-x-hidden bg-bg text-primary">
       <ProgressBar
         step={step}
         total={total}
@@ -53,8 +53,8 @@ const LessonShell = ({
         canGoForward={canGoForward}
         cfuStatuses={cfuStatuses}
       />
-      <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center justify-center px-4 pb-36 pt-20">
-        <div className="w-full space-y-8">
+      <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center justify-start px-3 pb-44 pt-16 sm:px-4 sm:pb-36 sm:pt-20">
+        <div className="w-full space-y-5 sm:space-y-8">
           <QuestionPrompt text={prompt} />
           <AnimatePresence mode="wait">
             <motion.div

@@ -19,6 +19,7 @@ const StepTableStarter = ({
   answer,
   history = [],
   showScale = false,
+  onSubmitCheck,
   onReadyChange,
   onCorrectChange,
   registerCheck,
@@ -89,10 +90,10 @@ const StepTableStarter = ({
   const rightTipTop = beamY + halfProjectionY
 
   return (
-    <div className="flex w-full max-w-4xl flex-col items-center gap-6">
+    <div className="flex w-full max-w-4xl flex-col items-center gap-5 sm:gap-6">
       {showScale ? (
         <div className="w-full p-2">
-          <div ref={scaleContainerRef} className="relative mx-auto h-80 w-full max-w-3xl">
+          <div ref={scaleContainerRef} className="relative mx-auto h-[19rem] w-full max-w-3xl sm:h-80">
             <div className="absolute left-1/2 top-12 z-10 h-24 w-1 -translate-x-1/2 bg-primary/70" />
             <div className="absolute left-1/2 top-[108px] h-16 w-10 -translate-x-1/2 rounded-t-full bg-primary/10" />
 
@@ -222,7 +223,9 @@ const StepTableStarter = ({
                       setValue(next)
                       setStatus('idle')
                     }}
-                    onSubmit={() => {}}
+                    onSubmit={() => {
+                      onSubmitCheck?.()
+                    }}
                     status={status}
                     ariaLabel="table input"
                     className="h-10 w-20 text-lg"
@@ -237,7 +240,9 @@ const StepTableStarter = ({
                       setValue(next)
                       setStatus('idle')
                     }}
-                    onSubmit={() => {}}
+                    onSubmit={() => {
+                      onSubmitCheck?.()
+                    }}
                     status={status}
                     ariaLabel="table input"
                     className="h-10 w-20 text-lg"

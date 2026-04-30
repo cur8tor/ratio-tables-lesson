@@ -100,9 +100,9 @@ const StepScaleBalance = ({
   }, [fixedHex, fixedTrap, onCorrectChange, registerCheck])
 
   return (
-    <div className="flex w-full max-w-4xl flex-col items-center gap-6 pb-24">
+    <div className="flex w-full max-w-4xl flex-col items-center gap-5 pb-28 sm:gap-6 sm:pb-24">
       <div className="w-full p-2">
-        <div ref={scaleContainerRef} className="relative mx-auto h-80 w-full max-w-3xl">
+        <div ref={scaleContainerRef} className="relative mx-auto h-[19rem] w-full max-w-3xl sm:h-80">
           <div className="absolute left-1/2 top-12 z-10 h-24 w-1 -translate-x-1/2 bg-primary/70" />
           <div className="absolute left-1/2 top-[108px] h-16 w-10 -translate-x-1/2 rounded-t-full bg-primary/10" />
 

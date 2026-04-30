@@ -105,10 +105,28 @@ function App() {
     setIsCheckRegistered(true)
   }, [])
 
+  const handleContinue = () => {
+    if (currentStep === 0) {
+      advanceStep()
+      return
+    }
+    if (!canPressCheck || !isCheckRegistered || !checkFn) return
+    if (stepPassed) {
+      advanceStep()
+      return
+    }
+    const ok = checkFn()
+    setHasChecked(true)
+    if (ok) {
+      advanceStep()
+    }
+  }
+
   const renderStep = () => {
     const common = {
       onReadyChange: handleReadyChange,
       onCorrect: advanceStep,
+      onSubmitCheck: handleContinue,
       onCorrectChange: handleCorrectChange,
       registerCheck: handleRegisterCheck,
     }
@@ -279,22 +297,7 @@ function App() {
         currentStep === 0 ? 'Start' : stepPassed ? 'Continue' : hasChecked ? 'Try again' : 'Check'
       }
       buttonWarning={currentStep > 0 && hasChecked && !stepPassed}
-      onContinue={() => {
-        if (currentStep === 0) {
-          advanceStep()
-          return
-        }
-        if (!canPressCheck || !isCheckRegistered || !checkFn) return
-        if (stepPassed) {
-          advanceStep()
-          return
-        }
-        const ok = checkFn()
-        setHasChecked(true)
-        if (ok) {
-          advanceStep()
-        }
-      }}
+      onContinue={handleContinue}
     >
       {renderStep()}
     </LessonShell>
