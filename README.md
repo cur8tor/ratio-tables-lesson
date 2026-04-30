@@ -30,6 +30,6 @@ Vite, React, TypeScript, Tailwind, Framer Motion. Single-page, no backend, no pe
 
 ## Author
 
-Tanner [last name] - Teach For America corps member teaching 7th grade math in
+Tanner Martz - Teach For America corps member teaching 7th grade math in
 Washington Heights, NYC. M.S.Ed. Special Education at Hunter College ('26).
 Design + CS undergrad at Tulane.
