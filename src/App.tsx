@@ -9,16 +9,44 @@ function App() {
   const prompts = ['', '', '', '', '', '', '', '', '', '']
   const faqItems = [
     {
-      title: 'Why this lesson design?',
-      body: 'This demo uses a concrete-to-abstract progression so learners first feel the ratio through balancing shapes, then encode that same structure in a table. The goal is to show conceptual understanding before procedural fluency.',
+      title: 'About this project',
+      paragraphs: [
+        'A 7th grade ratio and proportional reasoning lesson, built for the Brilliant Math Learning Designer application.',
+        'Ratio tables are the keystone of 7th grade math. Once a student can build one, they can solve almost every ratio problem on the state test: unit rate, percent change, scaled figures, unit conversion, even setting up equations of the form y = kx from a word problem. The same table scaffolds expressions, equations, and the integer arithmetic students will need for solving for x. Build the table once, and it becomes a manipulative the student carries through the rest of the year and into 8th grade.',
+        'So Ratio Path is built around a single core idea: the ratio table is the manipulative we are teaching. Not a worksheet. Not a way to organize work. A tool that makes information from a word problem, a graph, or a real situation legible and operable. Everything else in the lesson, the balance scale, the hexagon and trapezoid pattern blocks, the column for the constant of proportionality, exists to give the student a way into that table.',
+      ],
     },
     {
-      title: 'Where does this fit in scope and sequence?',
-      body: 'This lesson fits early in a proportional reasoning unit, right after introducing equivalent representations and before unit rates and proportional graphs. It can serve as a bridge from manipulatives to symbolic work.',
+      title: 'Why these specific design choices',
+      paragraphs: [
+        'Why a balance scale. A scale physicalizes the equivalence at the heart of a ratio. Two trapezoids on one side and one hexagon on the other do not just have the same value, they balance. A 7th grader who has spent years balancing equations to solve for x already has an intuition for what that means. The scale primes the algebraic move that comes one unit later, when the same students are asked to balance an equation. Same metaphor, different abstraction.',
+        'Why hexagons and trapezoids specifically. The 2:1 relationship between a yellow hexagon and two red trapezoids is structural, not arbitrary. Two trapezoids physically reassemble into one hexagon. The student does not have to take it on faith that 2 traps = 1 hex. They can see it. That makes the constant of proportionality, when it appears later as the fraction 2/1, feel like a naming of something they already know rather than a new concept introduced from outside.',
+        'Why the CRA progression. Concrete-Representational-Abstract is the framework I rely on most in my own classroom. In Ratio Path, the progression is explicit: students manipulate scales (concrete), watch a table emerge from those scales with shape icons in the cells (representational), then work in a table of pure numerals where the constant of proportionality is named below as a stacked fraction (abstract). The lesson ends with an inverse problem because solving forward is recall, while solving in reverse is evidence the relationship has actually been internalized.',
+        'Why a single arc, not a sampler. Most introductory online math content hops between contexts. Ratio Path does not. The same scale, same shapes, same table, and same fraction appear across all 10 steps, growing in abstraction but never replaced. The intent is for a student to leave the lesson with one durable mental object they can carry into the next lesson on percent change, into a unit conversion problem, into a scaled figure on a coordinate plane. The manipulative travels.',
+      ],
     },
     {
-      title: 'What would be added next?',
-      body: 'Future iterations would include two additional levels for scaling strategies and transfer tasks, plus teacher-facing notes, multilingual copy variants, and richer feedback states for common misconceptions.',
+      title: 'What this is and is not',
+      paragraphs: [
+        'This is a single Lesson 1 in a planned three-lesson arc. Lesson 2 (Scaling Up) introduces the constant of proportionality formally and connects the table to y = kx. Lesson 3 (Ratio Tables) extends the same table to percent problems, unit conversion, and scaled figures. Together the three lessons cover the bulk of 7.RP, the New York State 7th grade ratio and proportional relationships standard, on a single conceptual path.',
+        'Lesson 1 is a working interactive. Lessons 2 and 3 are placeholders on the home screen for now. The intent of this submission is to demonstrate the design of one fully-realized lesson, not the breadth of a curriculum.',
+      ],
+    },
+    {
+      title: 'A few things this lesson is opinionated about',
+      paragraphs: [
+        'It does not lead with definitions. The word ratio does not appear until after students have balanced three scales by hand. Definitions land harder when they name something the learner has already done.',
+        'It does not separate the manipulative from the abstraction. The scale stays visible during the table problems as a thinking tool, not a tutorial that disappears after the introduction. Students who are stuck on the inverse problem in Step 6 can glance back at the scale and reconstruct the relationship. The crutch is intentional.',
+        'It treats the constant of proportionality as the through-line, not a side concept. In 7th grade math, the COP is the single most useful object: it is the slope, it is the unit rate, it is k in y = kx, it is the conversion factor. Naming it once, in the right way, with the right manipulative behind it, pays off across an entire year of math instruction. Lesson 1 plants that seed. Lessons 2 and 3 grow it.',
+      ],
+    },
+    {
+      title: 'About the build',
+      paragraphs: [
+        'I built Ratio Path in React and TypeScript with Tailwind and Framer Motion, deployed on Vercel at lessons.tannermartz.com. The pedagogy and the build are both mine. Source: github.com/cur8tor/ratio-tables-lesson.',
+        'Before teaching, I studied Design and Computer Science at Tulane. I am currently a TFA corps member teaching 7th grade math at School in the Square in Washington Heights, finishing my second year alongside my M.S.Ed. in Special Education at Hunter College. The lesson reflects strategies I use in my classroom every day: pattern blocks, balance metaphors, ratio tables as a default organizing tool, and CRA progressions for any concept that students struggle to visualize. My final masters paper is on student motivation and technology integration in the classroom.',
+        'Tanner Martz, tannermartz.com',
+      ],
     },
   ]
   const [screen, setScreen] = useState<'home' | 'lesson'>('home')
@@ -165,7 +193,13 @@ function App() {
                     </button>
                     {isOpen ? (
                       <div className="bg-white px-4 py-3">
-                        <p className="text-sm leading-relaxed text-secondary">{item.body}</p>
+                        <div className="space-y-3">
+                          {item.paragraphs.map((paragraph) => (
+                            <p key={paragraph} className="text-sm leading-relaxed text-secondary">
+                              {paragraph}
+                            </p>
+                          ))}
+                        </div>
                       </div>
                     ) : null}
                   </div>
