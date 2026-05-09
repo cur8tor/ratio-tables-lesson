@@ -115,11 +115,8 @@ function App() {
       advanceStep()
       return
     }
-    const ok = checkFn()
+    checkFn()
     setHasChecked(true)
-    if (ok) {
-      advanceStep()
-    }
   }
 
   const renderStep = () => {
